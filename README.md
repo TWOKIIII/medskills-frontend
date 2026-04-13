@@ -1,11 +1,15 @@
-# Клонирует репозиторий
+# Клонируем репозиторий
+
 git clone https://github.com/TWOKIIII/medskills-frontend.git
 
-# Заходит в папку
+# Заходим в папку
+
 cd medskills-frontend
 
-# Устанавливает зависимости (создаст node_modules)
+# Устанавливаем зависимости (создаст node_modules)
+
 npm install
 
-# Запускает проект (создаст .nuxt)
+# Запускаем проект (создаст .nuxt)
+
 npm run dev

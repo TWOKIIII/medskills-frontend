@@ -9,22 +9,69 @@
         <p class="subtitle">{{ t('tests.subtitle') }}</p>
       </div>
 
+      <!-- Хлебные крошки -->
+      <div class="breadcrumbs" v-if="selectedCategory">
+        <button class="back-btn" @click="selectedCategory = null">
+          <span>←</span> {{ t('tests.backToCategories') }}
+        </button>
+        <span class="current-category">{{ t(selectedCategory.nameKey) }}</span>
+      </div>
+
       <div class="main-content">
-        <div class="tests-section">
-          <div class="tests-container">
-            <TestCard
-              v-for="(test, index) in testsList"
-              :key="test.id"
-              :title="t(test.titleKey)"
-              :description="t(test.descriptionKey)"
-              :status="test.status"
-              :progress="test.progress"
-              :index="index"
-              @action="handleTestAction"
-            />
+        <!-- Левая колонка -->
+        <div class="left-column">
+          <!-- Выбор категории -->
+          <div class="categories-section" v-if="!selectedCategory">
+            <div class="categories-grid">
+              <div 
+                v-for="category in categories" 
+                :key="category.id"
+                class="category-card"
+                @click="selectCategory(category)"
+              >
+                <div class="category-icon">{{ category.icon }}</div>
+                <h3>{{ t(category.nameKey) }}</h3>
+                <p>{{ t(category.descKey) }}</p>
+                <div class="category-stats">
+                  <span>{{ category.testsCount }} {{ t('tests.testsCount') }}</span>
+                  <span class="arrow">→</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Тесты выбранной категории -->
+          <div class="tests-section" v-else>
+            <div class="category-info">
+              <div class="category-header">
+                <span class="category-icon-large">{{ selectedCategory.icon }}</span>
+                <div>
+                  <h3>{{ t(selectedCategory.nameKey) }}</h3>
+                  <p>{{ t(selectedCategory.descKey) }}</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="tests-container">
+              <TestCard
+                v-for="(test, index) in filteredTests"
+                :key="test.id"
+                :title="t(test.titleKey)"
+                :description="t(test.descriptionKey)"
+                :status="test.status"
+                :progress="test.progress"
+                :index="index"
+                @action="handleTestAction(test)"
+              />
+              
+              <div v-if="filteredTests.length === 0" class="empty-tests">
+                <p>{{ t('tests.noTestsInCategory') }}</p>
+              </div>
+            </div>
           </div>
         </div>
 
+        <!-- Правая колонка -->
         <div class="info-section">
           <div class="specialization-info">
             <div class="info-card">
@@ -37,23 +84,16 @@
           </div>
 
           <div class="stats-card">
-            <h3>{{ t('doctor.stats') }}</h3>
-            <div class="stats-grid">
-              <div class="stat-item">
-                <div class="stat-value">12</div>
-                <div class="stat-label">{{ t('doctor.testsPassed') }}</div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-value">85%</div>
-                <div class="stat-label">{{ t('doctor.averageScore') }}</div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-value">3</div>
-                <div class="stat-label">{{ t('doctor.inProgress') }}</div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-value">156</div>
-                <div class="stat-label">{{ t('doctor.hoursLearning') }}</div>
+            <h3>{{ t('tests.categoryStats') }}</h3>
+            <div class="category-progress-list">
+              <div v-for="cat in categoriesWithProgress" :key="cat.id" class="category-progress-item">
+                <div class="category-progress-header">
+                  <span>{{ t(cat.nameKey) }}</span>
+                  <span>{{ cat.progress }}%</span>
+                </div>
+                <div class="progress-bar-small">
+                  <div class="progress-fill-small" :style="{ width: cat.progress + '%' }"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -61,9 +101,9 @@
           <div class="recommendations-card">
             <h3>{{ t('recommendations.title') }}</h3>
             <ul class="recommendations-list">
-              <li>{{ t('recommendations.item1') }}</li>
-              <li>{{ t('recommendations.item2') }}</li>
-              <li>{{ t('recommendations.item3') }}</li>
+              <li @click="goToRecommendedTest(1)">{{ t('recommendations.item1') }}</li>
+              <li @click="goToRecommendedTest(2)">{{ t('recommendations.item2') }}</li>
+              <li @click="goToRecommendedTest(3)">{{ t('recommendations.item3') }}</li>
             </ul>
           </div>
         </div>
@@ -73,81 +113,102 @@
 </template>
 
 <script setup>
+import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useNotifications } from '~/composables/useNotifications'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
+const { addNotification } = useNotifications()
 
-const testsList = [
-  {
-    id: 1,
-    titleKey: 'tests.traumatology',
-    descriptionKey: 'tests.traumatologyDesc',
-    status: 'continue',
-    progress: 65
-  },
-  {
-    id: 2,
-    titleKey: 'tests.rehabilitation',
-    descriptionKey: 'tests.rehabilitationDesc',
-    status: 'continue',
-    progress: 30
-  },
-  {
-    id: 3,
-    titleKey: 'tests.cardiology',
-    descriptionKey: 'tests.cardiologyDesc',
-    status: 'new',
-    progress: null
-  },
-  {
-    id: 4,
-    titleKey: 'tests.pharmacology',
-    descriptionKey: 'tests.pharmacologyDesc',
-    status: 'completed',
-    progress: 100
-  },
-  {
-    id: 5,
-    titleKey: 'tests.nutrition',
-    descriptionKey: 'tests.nutritionDesc',
-    status: 'new',
-    progress: null
-  },
-  {
-    id: 6,
-    titleKey: 'tests.biomechanics',
-    descriptionKey: 'tests.biomechanicsDesc',
-    status: 'new',
-    progress: null
-  },
-  {
-    id: 7,
-    titleKey: 'tests.doping',
-    descriptionKey: 'tests.dopingDesc',
-    status: 'continue',
-    progress: 45
-  }
+const selectedCategory = ref(null)
+
+// Категории - в каждой по 3 теста
+const categories = [
+  { id: 'traumatology', nameKey: 'tests.traumatology', descKey: 'tests.traumatologyDesc', icon: '🦴', testsCount: 3 },
+  { id: 'cardiology', nameKey: 'tests.cardiology', descKey: 'tests.cardiologyDesc', icon: '❤️', testsCount: 3 },
+  { id: 'rehabilitation', nameKey: 'tests.rehabilitation', descKey: 'tests.rehabilitationDesc', icon: '🏋️', testsCount: 3 },
+  { id: 'pharmacology', nameKey: 'tests.pharmacology', descKey: 'tests.pharmacologyDesc', icon: '💊', testsCount: 3 },
+  { id: 'nutrition', nameKey: 'tests.nutrition', descKey: 'tests.nutritionDesc', icon: '🥗', testsCount: 3 },
+  { id: 'biomechanics', nameKey: 'tests.biomechanics', descKey: 'tests.biomechanicsDesc', icon: '🏃', testsCount: 3 }
 ]
 
-const handleTestAction = (testData) => {
-  console.log('Действие с тестом:', testData)
+// Все тесты - по 3 на категорию
+const allTests = [
+  // Травматология - 3 теста
+  { id: 1, category: 'traumatology', titleKey: 'tests.traumatologyBasic', descriptionKey: 'tests.traumatologyBasicDesc', status: 'completed', progress: 100 },
+  { id: 2, category: 'traumatology', titleKey: 'tests.traumatologyJoints', descriptionKey: 'tests.traumatologyJointsDesc', status: 'continue', progress: 65 },
+  { id: 3, category: 'traumatology', titleKey: 'tests.traumatologySpine', descriptionKey: 'tests.traumatologySpineDesc', status: 'new', progress: null },
   
-  if (testData.status === 'continue') {
-    alert(`Продолжаем тест: ${testData.title}`)
-  } else if (testData.status === 'completed') {
-    alert(`Повторное прохождение: ${testData.title}`)
-  } else {
-    alert(`Начинаем новый тест: ${testData.title}`)
+  // Кардиология - 3 теста
+  { id: 4, category: 'cardiology', titleKey: 'tests.cardiologyECG', descriptionKey: 'tests.cardiologyECGDesc', status: 'completed', progress: 100 },
+  { id: 5, category: 'cardiology', titleKey: 'tests.cardiologyBasic', descriptionKey: 'tests.cardiologyBasicDesc', status: 'continue', progress: 42 },
+  { id: 6, category: 'cardiology', titleKey: 'tests.cardiologyStress', descriptionKey: 'tests.cardiologyStressDesc', status: 'new', progress: null },
+  
+  // Реабилитация - 3 теста
+  { id: 7, category: 'rehabilitation', titleKey: 'tests.rehabilitationBasic', descriptionKey: 'tests.rehabilitationBasicDesc', status: 'completed', progress: 100 },
+  { id: 8, category: 'rehabilitation', titleKey: 'tests.rehabilitationPostOp', descriptionKey: 'tests.rehabilitationPostOpDesc', status: 'continue', progress: 28 },
+  { id: 9, category: 'rehabilitation', titleKey: 'tests.rehabilitationSports', descriptionKey: 'tests.rehabilitationSportsDesc', status: 'new', progress: null },
+  
+  // Фармакология - 3 теста
+  { id: 10, category: 'pharmacology', titleKey: 'tests.pharmacologyDoping', descriptionKey: 'tests.pharmacologyDopingDesc', status: 'completed', progress: 100 },
+  { id: 11, category: 'pharmacology', titleKey: 'tests.pharmacologyBasic', descriptionKey: 'tests.pharmacologyBasicDesc', status: 'continue', progress: 73 },
+  { id: 12, category: 'pharmacology', titleKey: 'tests.nutritionRecovery', descriptionKey: 'tests.nutritionRecoveryDesc', status: 'new', progress: null },
+  
+  // Питание - 3 теста
+  { id: 13, category: 'nutrition', titleKey: 'tests.nutritionBasic', descriptionKey: 'tests.nutritionBasicDesc', status: 'completed', progress: 100 },
+  { id: 14, category: 'nutrition', titleKey: 'tests.nutritionCompetition', descriptionKey: 'tests.nutritionCompetitionDesc', status: 'continue', progress: 51 },
+  { id: 15, category: 'nutrition', titleKey: 'tests.nutritionRecovery', descriptionKey: 'tests.nutritionRecoveryDesc', status: 'new', progress: null },
+  
+  // Биомеханика - 3 теста
+  { id: 16, category: 'biomechanics', titleKey: 'tests.biomechanicsBasic', descriptionKey: 'tests.biomechanicsBasicDesc', status: 'completed', progress: 100 },
+  { id: 17, category: 'biomechanics', titleKey: 'tests.biomechanicsRunning', descriptionKey: 'tests.biomechanicsRunningDesc', status: 'continue', progress: 39 },
+  { id: 18, category: 'biomechanics', titleKey: 'tests.traumatologyAdvanced', descriptionKey: 'tests.traumatologyAdvancedDesc', status: 'new', progress: null }
+]
+
+const filteredTests = computed(() => {
+  if (!selectedCategory.value) return []
+  return allTests.filter(t => t.category === selectedCategory.value.id)
+})
+
+const categoriesWithProgress = computed(() => {
+  return categories.map(cat => {
+    const catTests = allTests.filter(t => t.category === cat.id)
+    const totalProgress = catTests.reduce((sum, t) => sum + (t.progress || 0), 0)
+    const avgProgress = catTests.length > 0 ? Math.round(totalProgress / catTests.length) : 0
+    return { ...cat, progress: avgProgress }
+  })
+})
+
+const selectCategory = (category) => {
+  selectedCategory.value = category
+}
+
+const handleTestAction = (test) => {
+  return (testData) => {
+    if (testData.status === 'continue') {
+      addNotification(`${t('tests.continuingTest')}: ${t(test.titleKey)}`, 'info')
+    } else if (testData.status === 'completed') {
+      addNotification(`${t('tests.retakingTest')}: ${t(test.titleKey)}`, 'info')
+    } else {
+      addNotification(`${t('tests.startingTest')}: ${t(test.titleKey)}`, 'success')
+    }
   }
 }
 
+const goToRecommendedTest = (recId) => {
+  let targetCategory
+  if (recId === 1) targetCategory = categories.find(c => c.id === 'cardiology')
+  else if (recId === 2) targetCategory = categories.find(c => c.id === 'rehabilitation')
+  else targetCategory = categories.find(c => c.id === 'nutrition')
+  if (targetCategory) selectedCategory.value = targetCategory
+}
+
 useHead({
-  title: 'Тесты - MedSkills'
+  title: locale.value === 'ru' ? 'Тесты - MedSkills' : 'Tests - MedSkills'
 })
 </script>
 
 <style scoped>
-/* Твои существующие стили без изменений */
 .tests-page {
   min-height: 100vh;
   background: #f0f4f8;
@@ -160,7 +221,7 @@ useHead({
 }
 
 .section-header {
-  margin-bottom: 30px;
+  margin-bottom: 24px;
 }
 
 .section-header h2 {
@@ -175,51 +236,146 @@ useHead({
   color: #64748b;
 }
 
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #3b82f6;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.back-btn:hover {
+  background: #eff6ff;
+}
+
+.current-category {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
 .main-content {
   display: grid;
-  grid-template-columns: 1fr 380px;
+  grid-template-columns: 1fr 350px;
   gap: 24px;
 }
 
-.tests-section {
+.left-column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.category-card {
   background: white;
-  border-radius: 24px;
+  border-radius: 20px;
   padding: 24px;
+  cursor: pointer;
+  transition: all 0.2s;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
+.category-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.category-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.category-card h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 8px;
+}
+
+.category-card p {
+  font-size: 14px;
+  color: #64748b;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.category-stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: #3b82f6;
+  font-weight: 500;
+}
+
+.category-info {
+  background: white;
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.category-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.category-icon-large {
+  font-size: 56px;
+}
+
+.category-header h3 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 4px;
+}
+
+.category-header p {
+  font-size: 14px;
+  color: #64748b;
+}
+
 .tests-container {
-  max-height: 700px;
-  overflow-y: auto;
-  padding-right: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.tests-container::-webkit-scrollbar {
-  width: 8px;
-}
-
-.tests-container::-webkit-scrollbar-track {
-  background: #f1f5f9;
-  border-radius: 4px;
-}
-
-.tests-container::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
-}
-
-.tests-container::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+.empty-tests {
+  text-align: center;
+  padding: 40px;
+  background: white;
+  border-radius: 20px;
+  color: #64748b;
 }
 
 .info-section {
   display: flex;
   flex-direction: column;
   gap: 20px;
-}
-
-.specialization-info {
-  margin: 0;
 }
 
 .info-card {
@@ -242,7 +398,6 @@ useHead({
   display: flex;
   align-items: center;
   justify-content: center;
-  backdrop-filter: blur(10px);
 }
 
 .info-content h4 {
@@ -271,26 +426,36 @@ useHead({
   margin-bottom: 20px;
 }
 
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
+.category-progress-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.stat-item {
-  text-align: center;
+.category-progress-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.stat-value {
-  font-size: 28px;
-  font-weight: 700;
-  color: #3b82f6;
-  margin-bottom: 4px;
+.category-progress-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #1e293b;
 }
 
-.stat-label {
-  font-size: 13px;
-  color: #64748b;
+.progress-bar-small {
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill-small {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6 0%, #667eea 100%);
+  border-radius: 3px;
 }
 
 .recommendations-card {
@@ -328,20 +493,13 @@ useHead({
   color: #3b82f6;
 }
 
-.recommendations-list li::before {
-  content: "→ ";
-  color: #3b82f6;
-  font-weight: 600;
-  margin-right: 8px;
-}
-
 @media (max-width: 1024px) {
   .main-content {
     grid-template-columns: 1fr;
   }
   
-  .container {
-    padding: 0;
+  .categories-grid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -354,8 +512,9 @@ useHead({
     font-size: 24px;
   }
   
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .category-header {
+    flex-direction: column;
+    text-align: center;
   }
 }
 </style>

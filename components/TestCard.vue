@@ -24,63 +24,41 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
-  title: {
-    type: String,
-    default: 'Название теста'
-  },
-  description: {
-    type: String,
-    default: 'Описание'
-  },
-  status: {
-    type: String,
-    default: 'new', // 'new', 'continue', 'completed'
-    validator: (value) => ['new', 'continue', 'completed'].includes(value)
-  },
-  progress: {
-    type: Number,
-    default: null
-  },
-  index: {
-    type: Number,
-    default: 0
-  }
+  title: { type: String, default: 'Название теста' },
+  description: { type: String, default: 'Описание' },
+  status: { type: String, default: 'new', validator: (v) => ['new', 'continue', 'completed'].includes(v) },
+  progress: { type: Number, default: null },
+  index: { type: Number, default: 0 }
 })
 
 const emit = defineEmits(['action'])
 
 const buttonText = computed(() => {
   switch (props.status) {
-    case 'continue':
-      return 'Продолжить'
-    case 'completed':
-      return 'Пройти снова'
-    default:
-      return 'Пройти'
+    case 'continue': return t('tests.continue')
+    case 'completed': return t('tests.retake')
+    default: return t('tests.start')
   }
 })
 
 const buttonClass = computed(() => {
   switch (props.status) {
-    case 'continue':
-      return 'btn btn-continue'
-    case 'completed':
-      return 'btn btn-retake'
-    default:
-      return 'btn btn-start'
+    case 'continue': return 'btn btn-continue'
+    case 'completed': return 'btn btn-retake'
+    default: return 'btn btn-start'
   }
 })
 
 const iconColor = computed(() => {
   switch (props.status) {
-    case 'continue':
-      return '#3b82f6'
-    case 'completed':
-      return '#f59e0b'
-    default:
-      return '#10b981'
+    case 'continue': return '#3b82f6'
+    case 'completed': return '#f59e0b'
+    default: return '#10b981'
   }
 })
 
@@ -90,6 +68,7 @@ const handleAction = () => {
 </script>
 
 <style scoped>
+/* стили без изменений */
 .test-card {
   background: white;
   border-radius: 16px;
@@ -208,8 +187,6 @@ const handleAction = () => {
 }
 
 @keyframes fadeIn {
-  to {
-    opacity: 1;
-  }
+  to { opacity: 1; }
 }
 </style>

@@ -21,6 +21,9 @@ export const useSettings = () => {
         } catch (e) {
           console.error('Error loading settings')
         }
+      } else {
+        // Если настроек нет, сохраняем дефолтные
+        localStorage.setItem('medskills_settings', JSON.stringify(settings.value))
       }
       initialized = true
     }

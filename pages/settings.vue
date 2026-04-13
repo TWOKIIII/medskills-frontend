@@ -30,8 +30,14 @@
             <p>{{ t('settings.languageDesc') }}</p>
           </div>
           <select :value="settings.locale" @change="handleChangeLanguage" class="language-select">
-            <option value="ru">RU - Русский</option>
-            <option value="en">EN - English</option>
+            <option value="ru">🇷🇺 Русский</option>
+            <option value="en">🇬🇧 English</option>
+            <option value="de">🇩🇪 Deutsch</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="be">🇧🇾 Беларуская</option>
+            <option value="kk">🇰🇿 Қазақша</option>
+            <option value="pl">🇵🇱 Polski</option>
+            <option value="sv">🇸🇪 Svenska</option>
           </select>
         </div>
       </div>
@@ -65,8 +71,17 @@ const handleChangeLanguage = (event) => {
   
   if (settings.value.notifications) {
     const languageName = getLanguageName(newLocale)
-    const message = newLocale === 'ru' ? `Язык изменён на ${languageName}` : `Language changed to ${languageName}`
-    addNotification(message, 'success')
+    const messages = {
+      ru: `Язык изменён на ${languageName}`,
+      en: `Language changed to ${languageName}`,
+      de: `Sprache auf ${languageName} geändert`,
+      fr: `Langue changée en ${languageName}`,
+      be: `Мова зменена на ${languageName}`,
+      kk: `Тіл ${languageName} тіліне өзгертілді`,
+      pl: `Język zmieniony na ${languageName}`,
+      sv: `Språk ändrat till ${languageName}`
+    }
+    addNotification(messages[newLocale] || `Language changed to ${languageName}`, 'success')
   }
 }
 
@@ -180,6 +195,6 @@ input:checked + .slider:before {
   font-size: 14px;
   background: white;
   cursor: pointer;
-  min-width: 180px;
+  min-width: 220px;
 }
 </style>

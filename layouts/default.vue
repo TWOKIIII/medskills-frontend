@@ -10,9 +10,16 @@
 </template>
 
 <script setup>
+import { onMounted } from 'vue'
 import { useNotifications } from '~/composables/useNotifications'
+import { useLanguage } from '~/composables/useLanguage'
 
 const { snackbar } = useNotifications()
+const { loadLocale } = useLanguage()
+
+onMounted(() => {
+  loadLocale()
+})
 </script>
 
 <style scoped>
@@ -50,7 +57,7 @@ const { snackbar } = useNotifications()
 }
 
 .snackbar.error {
-  background: #ef4444;  /* Красный для выключения */
+  background: #ef4444;
 }
 
 @keyframes slideUp {
