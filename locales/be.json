@@ -38,7 +38,11 @@
     "notifications": "Апавяшчэнні",
     "notificationsDesc": "Атрымліваць апавяшчэнні аб тэстах",
     "language": "Мова",
-    "languageDesc": "Выберыце мову інтэрфейсу"
+    "languageDesc": "Выберыце мову інтэрфейсу",
+    "theme": "Тэма",
+    "themeDesc": "Выберыце тэму афармлення",
+    "light": "Светлая",
+    "dark": "Цёмная"
   },
   "tests": {
     "title": "Тэсты",

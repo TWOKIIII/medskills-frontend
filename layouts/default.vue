@@ -13,12 +13,15 @@
 import { onMounted } from 'vue'
 import { useNotifications } from '~/composables/useNotifications'
 import { useLanguage } from '~/composables/useLanguage'
+import { useTheme } from '~/composables/useTheme'
 
 const { snackbar } = useNotifications()
 const { loadLocale } = useLanguage()
+const { initTheme } = useTheme()
 
 onMounted(() => {
   loadLocale()
+  initTheme()
 })
 </script>
 
@@ -26,8 +29,9 @@ onMounted(() => {
 .app-layout {
   width: 100%;
   min-height: 100vh;
-  background: #f0f4f8;
+  background: var(--bg-primary, #f0f4f8);
   position: relative;
+  color: var(--text-primary, #1e293b);
 }
 
 .snackbar {

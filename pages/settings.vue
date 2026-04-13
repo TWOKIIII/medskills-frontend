@@ -40,6 +40,29 @@
             <option value="sv">🇸🇪 Svenska</option>
           </select>
         </div>
+        
+        <div class="setting-item">
+          <div class="setting-info">
+            <h3>{{ t('settings.theme') }}</h3>
+            <p>{{ t('settings.themeDesc') }}</p>
+          </div>
+          <div class="theme-buttons">
+            <button 
+              class="theme-btn light" 
+              :class="{ active: settings.theme === 'light' }"
+              @click="handleSetTheme('light')"
+            >
+              ☀️ {{ t('settings.light') }}
+            </button>
+            <button 
+              class="theme-btn dark" 
+              :class="{ active: settings.theme === 'dark' }"
+              @click="handleSetTheme('dark')"
+            >
+              🌙 {{ t('settings.dark') }}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -50,11 +73,13 @@ import { useI18n } from 'vue-i18n'
 import { useSettings } from '~/composables/useSettings'
 import { useLanguage } from '~/composables/useLanguage'
 import { useNotifications } from '~/composables/useNotifications'
+import { useTheme } from '~/composables/useTheme'
 
 const { t } = useI18n()
-const { settings, toggleNotifications } = useSettings()
+const { settings, toggleNotifications, setTheme: setSettingsTheme } = useSettings()
 const { setLocale, getLanguageName } = useLanguage()
 const { addNotification } = useNotifications()
+const { setTheme } = useTheme()
 
 const handleToggleNotifications = () => {
   const enabled = toggleNotifications()
@@ -73,16 +98,15 @@ const handleChangeLanguage = (event) => {
     const languageName = getLanguageName(newLocale)
     const messages = {
       ru: `Язык изменён на ${languageName}`,
-      en: `Language changed to ${languageName}`,
-      de: `Sprache auf ${languageName} geändert`,
-      fr: `Langue changée en ${languageName}`,
-      be: `Мова зменена на ${languageName}`,
-      kk: `Тіл ${languageName} тіліне өзгертілді`,
-      pl: `Język zmieniony na ${languageName}`,
-      sv: `Språk ändrat till ${languageName}`
+      en: `Language changed to ${languageName}`
     }
     addNotification(messages[newLocale] || `Language changed to ${languageName}`, 'success')
   }
+}
+
+const handleSetTheme = (theme) => {
+  setSettingsTheme(theme)
+  setTheme(theme === 'dark')
 }
 
 useHead({
@@ -93,7 +117,7 @@ useHead({
 <style scoped>
 .settings-page {
   min-height: 100vh;
-  background: #f0f4f8;
+  background: var(--bg-primary, #f0f4f8);
   padding: 20px;
 }
 
@@ -109,11 +133,11 @@ useHead({
 .section-header h2 {
   font-size: 32px;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--text-primary, #1e293b);
 }
 
 .settings-card {
-  background: white;
+  background: var(--bg-secondary, white);
   border-radius: 20px;
   padding: 24px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
@@ -124,7 +148,7 @@ useHead({
   align-items: center;
   justify-content: space-between;
   padding: 20px 0;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
 }
 
 .setting-item:last-child {
@@ -134,13 +158,13 @@ useHead({
 .setting-info h3 {
   font-size: 18px;
   font-weight: 600;
-  color: #1e293b;
+  color: var(--text-primary, #1e293b);
   margin-bottom: 4px;
 }
 
 .setting-info p {
   font-size: 14px;
-  color: #64748b;
+  color: var(--text-secondary, #64748b);
 }
 
 .switch {
@@ -189,12 +213,67 @@ input:checked + .slider:before {
 }
 
 .language-select {
-  padding: 8px 16px;
-  border: 1px solid #e2e8f0;
+  padding: 10px 16px;
+  border: 1px solid var(--border-color, #e2e8f0);
   border-radius: 8px;
   font-size: 14px;
-  background: white;
+  background: var(--bg-secondary, white);
+  color: var(--text-primary, #1e293b);
   cursor: pointer;
   min-width: 220px;
+}
+
+.language-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.theme-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.theme-btn {
+  padding: 10px 20px;
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 8px;
+  background: var(--bg-secondary, white);
+  color: var(--text-primary, #1e293b);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.theme-btn:hover {
+  background: var(--bg-hover, #f8fafc);
+}
+
+.theme-btn.active {
+  background: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+@media (max-width: 600px) {
+  .setting-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .language-select {
+    width: 100%;
+    min-width: unset;
+  }
+  
+  .theme-buttons {
+    width: 100%;
+  }
+  
+  .theme-btn {
+    flex: 1;
+    text-align: center;
+  }
 }
 </style>

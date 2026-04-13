@@ -38,7 +38,11 @@
     "notifications": "Benachrichtigungen",
     "notificationsDesc": "Benachrichtigungen über Tests und Updates erhalten",
     "language": "Sprache",
-    "languageDesc": "Wählen Sie die Sprache der Benutzeroberfläche"
+    "languageDesc": "Wählen Sie die Sprache der Benutzeroberfläche",
+    "theme": "Design",
+    "themeDesc": "Wählen Sie das Design",
+    "light": "Hell",
+    "dark": "Dunkel"
   },
   "tests": {
     "title": "Tests",

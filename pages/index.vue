@@ -122,47 +122,33 @@ const { addNotification } = useNotifications()
 
 const selectedCategory = ref(null)
 
-// Категории - в каждой по 3 теста
 const categories = [
-  { id: 'traumatology', nameKey: 'tests.traumatology', descKey: 'tests.traumatologyDesc', icon: '🦴', testsCount: 3 },
-  { id: 'cardiology', nameKey: 'tests.cardiology', descKey: 'tests.cardiologyDesc', icon: '❤️', testsCount: 3 },
-  { id: 'rehabilitation', nameKey: 'tests.rehabilitation', descKey: 'tests.rehabilitationDesc', icon: '🏋️', testsCount: 3 },
-  { id: 'pharmacology', nameKey: 'tests.pharmacology', descKey: 'tests.pharmacologyDesc', icon: '💊', testsCount: 3 },
-  { id: 'nutrition', nameKey: 'tests.nutrition', descKey: 'tests.nutritionDesc', icon: '🥗', testsCount: 3 },
-  { id: 'biomechanics', nameKey: 'tests.biomechanics', descKey: 'tests.biomechanicsDesc', icon: '🏃', testsCount: 3 }
+  { id: 'traumatology', nameKey: 'tests.traumatology', descKey: 'tests.traumatologyDesc', icon: '🦴', testsCount: 1 },
+  { id: 'cardiology', nameKey: 'tests.cardiology', descKey: 'tests.cardiologyDesc', icon: '❤️', testsCount: 1 },
+  { id: 'rehabilitation', nameKey: 'tests.rehabilitation', descKey: 'tests.rehabilitationDesc', icon: '🏋️', testsCount: 1 },
+  { id: 'pharmacology', nameKey: 'tests.pharmacology', descKey: 'tests.pharmacologyDesc', icon: '💊', testsCount: 1 },
+  { id: 'nutrition', nameKey: 'tests.nutrition', descKey: 'tests.nutritionDesc', icon: '🥗', testsCount: 1 },
+  { id: 'biomechanics', nameKey: 'tests.biomechanics', descKey: 'tests.biomechanicsDesc', icon: '🏃', testsCount: 1 }
 ]
 
-// Все тесты - по 3 на категорию
 const allTests = [
-  // Травматология - 3 теста
-  { id: 1, category: 'traumatology', titleKey: 'tests.traumatologyBasic', descriptionKey: 'tests.traumatologyBasicDesc', status: 'completed', progress: 100 },
-  { id: 2, category: 'traumatology', titleKey: 'tests.traumatologyJoints', descriptionKey: 'tests.traumatologyJointsDesc', status: 'continue', progress: 65 },
-  { id: 3, category: 'traumatology', titleKey: 'tests.traumatologySpine', descriptionKey: 'tests.traumatologySpineDesc', status: 'new', progress: null },
+  // Травматология - 1 тест (не начатый)
+  { id: 1, category: 'traumatology', titleKey: 'tests.traumatologyBasic', descriptionKey: 'tests.traumatologyBasicDesc', status: 'new', progress: null },
   
-  // Кардиология - 3 теста
-  { id: 4, category: 'cardiology', titleKey: 'tests.cardiologyECG', descriptionKey: 'tests.cardiologyECGDesc', status: 'completed', progress: 100 },
-  { id: 5, category: 'cardiology', titleKey: 'tests.cardiologyBasic', descriptionKey: 'tests.cardiologyBasicDesc', status: 'continue', progress: 42 },
-  { id: 6, category: 'cardiology', titleKey: 'tests.cardiologyStress', descriptionKey: 'tests.cardiologyStressDesc', status: 'new', progress: null },
+  // Кардиология - 1 тест (не начатый)
+  { id: 2, category: 'cardiology', titleKey: 'tests.cardiologyBasic', descriptionKey: 'tests.cardiologyBasicDesc', status: 'new', progress: null },
   
-  // Реабилитация - 3 теста
-  { id: 7, category: 'rehabilitation', titleKey: 'tests.rehabilitationBasic', descriptionKey: 'tests.rehabilitationBasicDesc', status: 'completed', progress: 100 },
-  { id: 8, category: 'rehabilitation', titleKey: 'tests.rehabilitationPostOp', descriptionKey: 'tests.rehabilitationPostOpDesc', status: 'continue', progress: 28 },
-  { id: 9, category: 'rehabilitation', titleKey: 'tests.rehabilitationSports', descriptionKey: 'tests.rehabilitationSportsDesc', status: 'new', progress: null },
+  // Реабилитация - 1 тест (не начатый)
+  { id: 3, category: 'rehabilitation', titleKey: 'tests.rehabilitationBasic', descriptionKey: 'tests.rehabilitationBasicDesc', status: 'new', progress: null },
   
-  // Фармакология - 3 теста
-  { id: 10, category: 'pharmacology', titleKey: 'tests.pharmacologyDoping', descriptionKey: 'tests.pharmacologyDopingDesc', status: 'completed', progress: 100 },
-  { id: 11, category: 'pharmacology', titleKey: 'tests.pharmacologyBasic', descriptionKey: 'tests.pharmacologyBasicDesc', status: 'continue', progress: 73 },
-  { id: 12, category: 'pharmacology', titleKey: 'tests.nutritionRecovery', descriptionKey: 'tests.nutritionRecoveryDesc', status: 'new', progress: null },
+  // Фармакология - 1 тест (не начатый)
+  { id: 4, category: 'pharmacology', titleKey: 'tests.pharmacologyBasic', descriptionKey: 'tests.pharmacologyBasicDesc', status: 'new', progress: null },
   
-  // Питание - 3 теста
-  { id: 13, category: 'nutrition', titleKey: 'tests.nutritionBasic', descriptionKey: 'tests.nutritionBasicDesc', status: 'completed', progress: 100 },
-  { id: 14, category: 'nutrition', titleKey: 'tests.nutritionCompetition', descriptionKey: 'tests.nutritionCompetitionDesc', status: 'continue', progress: 51 },
-  { id: 15, category: 'nutrition', titleKey: 'tests.nutritionRecovery', descriptionKey: 'tests.nutritionRecoveryDesc', status: 'new', progress: null },
+  // Питание - 1 тест (не начатый)
+  { id: 5, category: 'nutrition', titleKey: 'tests.nutritionBasic', descriptionKey: 'tests.nutritionBasicDesc', status: 'new', progress: null },
   
-  // Биомеханика - 3 теста
-  { id: 16, category: 'biomechanics', titleKey: 'tests.biomechanicsBasic', descriptionKey: 'tests.biomechanicsBasicDesc', status: 'completed', progress: 100 },
-  { id: 17, category: 'biomechanics', titleKey: 'tests.biomechanicsRunning', descriptionKey: 'tests.biomechanicsRunningDesc', status: 'continue', progress: 39 },
-  { id: 18, category: 'biomechanics', titleKey: 'tests.traumatologyAdvanced', descriptionKey: 'tests.traumatologyAdvancedDesc', status: 'new', progress: null }
+  // Биомеханика - 1 тест (не начатый)
+  { id: 6, category: 'biomechanics', titleKey: 'tests.biomechanicsBasic', descriptionKey: 'tests.biomechanicsBasicDesc', status: 'new', progress: null }
 ]
 
 const filteredTests = computed(() => {

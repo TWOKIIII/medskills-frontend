@@ -38,7 +38,11 @@
     "notifications": "Notifications",
     "notificationsDesc": "Recevoir des notifications sur les tests et mises à jour",
     "language": "Langue",
-    "languageDesc": "Choisir la langue de l'interface"
+    "languageDesc": "Choisir la langue de l'interface",
+    "theme": "Thème",
+    "themeDesc": "Choisir le thème",
+    "light": "Clair",
+    "dark": "Sombre"
   },
   "tests": {
     "title": "Tests",

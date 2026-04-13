@@ -38,7 +38,11 @@
     "notifications": "Powiadomienia",
     "notificationsDesc": "Otrzymuj powiadomienia o testach",
     "language": "Język",
-    "languageDesc": "Wybierz język interfejsu"
+    "languageDesc": "Wybierz język interfejsu",
+    "theme": "Motyw",
+    "themeDesc": "Wybierz motyw",
+    "light": "Jasny",
+    "dark": "Ciemny"
   },
   "tests": {
     "title": "Testy",

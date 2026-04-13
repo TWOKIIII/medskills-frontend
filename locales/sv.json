@@ -38,7 +38,11 @@
     "notifications": "Aviseringar",
     "notificationsDesc": "Ta emot aviseringar om tester",
     "language": "Språk",
-    "languageDesc": "Välj gränssnittsspråk"
+    "languageDesc": "Välj gränssnittsspråk",
+    "theme": "Tema",
+    "themeDesc": "Välj tema",
+    "light": "Ljust",
+    "dark": "Mörkt"
   },
   "tests": {
     "title": "Tester",

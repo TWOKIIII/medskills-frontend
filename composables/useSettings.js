@@ -1,13 +1,12 @@
 // composables/useSettings.js
 import { ref } from 'vue'
 
-// Глобальное реактивное состояние
 const settings = ref({
   notifications: true,
-  locale: 'ru'
+  locale: 'ru',
+  theme: 'light'
 })
 
-// Флаг инициализации
 let initialized = false
 
 export const useSettings = () => {
@@ -22,7 +21,6 @@ export const useSettings = () => {
           console.error('Error loading settings')
         }
       } else {
-        // Если настроек нет, сохраняем дефолтные
         localStorage.setItem('medskills_settings', JSON.stringify(settings.value))
       }
       initialized = true
@@ -49,13 +47,18 @@ export const useSettings = () => {
     }
   }
   
-  // Автозагрузка при первом обращении
+  const setTheme = (theme) => {
+    settings.value.theme = theme
+    saveSettings()
+  }
+  
   loadSettings()
   
   return {
     settings,
     loadSettings,
     toggleNotifications,
-    setLocale
+    setLocale,
+    setTheme
   }
 }
