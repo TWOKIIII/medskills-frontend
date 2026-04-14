@@ -1,11 +1,13 @@
 // composables/useSettings.js
 import { ref } from 'vue'
 
-const settings = ref({
+const defaultSettings = {
   notifications: true,
   locale: 'ru',
   theme: 'light'
-})
+}
+
+const settings = ref({ ...defaultSettings })
 
 let initialized = false
 
@@ -51,6 +53,11 @@ export const useSettings = () => {
     settings.value.theme = theme
     saveSettings()
   }
+
+  const resetSettings = () => {
+    settings.value = { ...defaultSettings }
+    saveSettings()
+  }
   
   loadSettings()
   
@@ -59,6 +66,7 @@ export const useSettings = () => {
     loadSettings,
     toggleNotifications,
     setLocale,
-    setTheme
+    setTheme,
+    resetSettings
   }
 }

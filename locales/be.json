@@ -105,7 +105,14 @@
     "biomechanicsBasic": "Асновы біямеханікі",
     "biomechanicsBasicDesc": "Базавыя прынцыпы руху чалавека",
     "biomechanicsRunning": "Біямеханіка бегу",
-    "biomechanicsRunningDesc": "Аналіз тэхнікі бегу і прафілактыка траўм"
+    "biomechanicsRunningDesc": "Аналіз тэхнікі бегу і прафілактыка траўм",
+    "backToTests": "Назад да тэстаў",
+  "question": "Пытанне",
+  "previous": "Назад",
+  "next": "Далей",
+  "finish": "Завяршыць",
+  "testCompleted": "Тэст завершаны!",
+  "correctAnswers": "правільных адказаў"
   },
   "doctor": {
     "specialization": "Адміністратар",

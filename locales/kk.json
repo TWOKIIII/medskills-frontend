@@ -42,7 +42,14 @@
     "theme": "Тақырып",
     "themeDesc": "Безендіру тақырыбын таңдаңыз",
     "light": "Жарық",
-    "dark": "Қараңғы"
+    "dark": "Қараңғы",
+    "backToTests": "Тесттерге оралу",
+  "question": "Сұрақ",
+  "previous": "Артқа",
+  "next": "Келесі",
+  "finish": "Аяқтау",
+  "testCompleted": "Тест аяқталды!",
+  "correctAnswers": "дұрыс жауап"
   },
   "tests": {
     "title": "Тесттер",

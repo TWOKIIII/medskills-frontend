@@ -105,7 +105,14 @@
     "biomechanicsBasic": "Grundlagen der Biomechanik",
     "biomechanicsBasicDesc": "Grundprinzipien der menschlichen Bewegung",
     "biomechanicsRunning": "Laufbiomechanik",
-    "biomechanicsRunningDesc": "Analyse der Lauftechnik und Verletzungsprävention"
+    "biomechanicsRunningDesc": "Analyse der Lauftechnik und Verletzungsprävention",
+    "backToTests": "Zurück zu Tests",
+  "question": "Frage",
+  "previous": "Zurück",
+  "next": "Weiter",
+  "finish": "Abschließen",
+  "testCompleted": "Test abgeschlossen!",
+  "correctAnswers": "richtige Antworten"
   },
   "doctor": {
     "specialization": "Administrator",

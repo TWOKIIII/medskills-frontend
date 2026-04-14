@@ -35,14 +35,20 @@
   },
   "settings": {
     "title": "Settings",
-    "notifications": "Notifications",
-    "notificationsDesc": "Receive notifications about tests and updates",
-    "language": "Language",
-    "languageDesc": "Choose interface language",
-    "theme": "Theme",
-    "themeDesc": "Choose theme",
-    "light": "Light",
-    "dark": "Dark"
+  "notifications": "Notifications",
+  "notificationsDesc": "Receive notifications about tests and updates",
+  "language": "Language",
+  "languageDesc": "Choose interface language",
+  "theme": "Theme",
+  "themeDesc": "Choose theme",
+  "light": "Light",
+  "dark": "Dark",
+  "resetData": "Reset Data",
+  "resetDataDesc": "Reset all local application data",
+  "reset": "Reset",
+  "confirmReset": "Confirm Reset",
+  "confirmResetDesc": "All your settings, test progress and profile data will be reset. This action cannot be undone.",
+  "dataReset": "All data has been reset"
   },
   "tests": {
     "title": "Tests",
@@ -105,7 +111,14 @@
     "biomechanicsBasic": "Basics of Biomechanics",
     "biomechanicsBasicDesc": "Basic principles of human movement",
     "biomechanicsRunning": "Running Biomechanics",
-    "biomechanicsRunningDesc": "Running technique analysis and injury prevention"
+    "biomechanicsRunningDesc": "Running technique analysis and injury prevention",
+    "backToTests": "Back to tests",
+  "question": "Question",
+  "previous": "Previous",
+  "next": "Next",
+  "finish": "Finish",
+  "testCompleted": "Test completed!",
+  "correctAnswers": "correct answers"
   },
   "doctor": {
     "specialization": "Administrator",

@@ -105,7 +105,14 @@
     "biomechanicsBasic": "Podstawy biomechaniki",
     "biomechanicsBasicDesc": "Podstawowe zasady ruchu człowieka",
     "biomechanicsRunning": "Biomechanika biegu",
-    "biomechanicsRunningDesc": "Analiza techniki biegu i profilaktyka urazów"
+    "biomechanicsRunningDesc": "Analiza techniki biegu i profilaktyka urazów",
+    "backToTests": "Powrót do testów",
+  "question": "Pytanie",
+  "previous": "Wstecz",
+  "next": "Dalej",
+  "finish": "Zakończ",
+  "testCompleted": "Test zakończony!",
+  "correctAnswers": "poprawne odpowiedzi"
   },
   "doctor": {
     "specialization": "Administrator",

@@ -9,6 +9,7 @@
       </div>
       
       <div class="settings-card">
+        <!-- Уведомления -->
         <div class="setting-item">
           <div class="setting-info">
             <h3>{{ t('settings.notifications') }}</h3>
@@ -24,6 +25,7 @@
           </label>
         </div>
         
+        <!-- Язык -->
         <div class="setting-item">
           <div class="setting-info">
             <h3>{{ t('settings.language') }}</h3>
@@ -41,6 +43,7 @@
           </select>
         </div>
         
+        <!-- Тема -->
         <div class="setting-item">
           <div class="setting-info">
             <h3>{{ t('settings.theme') }}</h3>
@@ -63,23 +66,57 @@
             </button>
           </div>
         </div>
+
+        <!-- Сброс данных -->
+        <div class="setting-item">
+          <div class="setting-info">
+            <h3>{{ t('settings.resetData') }}</h3>
+            <p>{{ t('settings.resetDataDesc') }}</p>
+          </div>
+          <button class="btn btn-danger" @click="showResetConfirm = true">
+            {{ t('settings.reset') }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Модальное окно подтверждения -->
+    <div class="modal" v-if="showResetConfirm" @click="showResetConfirm = false">
+      <div class="modal-content confirm-modal" @click.stop>
+        <h3>{{ t('settings.confirmReset') }}</h3>
+        <p>{{ t('settings.confirmResetDesc') }}</p>
+        <div class="modal-actions">
+          <button class="btn btn-danger" @click="handleResetData">
+            {{ t('settings.reset') }}
+          </button>
+          <button class="btn btn-secondary" @click="showResetConfirm = false">
+            {{ t('profile.cancel') }}
+          </button>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useSettings } from '~/composables/useSettings'
 import { useLanguage } from '~/composables/useLanguage'
 import { useNotifications } from '~/composables/useNotifications'
 import { useTheme } from '~/composables/useTheme'
+import { useTests } from '~/composables/useTests'
+import { useProfile } from '~/composables/useProfile'
 
 const { t } = useI18n()
-const { settings, toggleNotifications, setTheme: setSettingsTheme } = useSettings()
+const { settings, toggleNotifications, setTheme: setSettingsTheme, resetSettings } = useSettings()
 const { setLocale, getLanguageName } = useLanguage()
 const { addNotification } = useNotifications()
 const { setTheme } = useTheme()
+const { resetAllTests } = useTests()
+const { resetProfile } = useProfile()
+
+const showResetConfirm = ref(false)
 
 const handleToggleNotifications = () => {
   const enabled = toggleNotifications()
@@ -107,6 +144,31 @@ const handleChangeLanguage = (event) => {
 const handleSetTheme = (theme) => {
   setSettingsTheme(theme)
   setTheme(theme === 'dark')
+}
+
+const handleResetData = () => {
+  // Сбрасываем все данные
+  if (process.client) {
+    // Очищаем localStorage
+    localStorage.clear()
+    
+    // Сбрасываем тесты
+    resetAllTests()
+    
+    // Сбрасываем профиль
+    resetProfile()
+    
+    // Сбрасываем настройки (сохраняем язык и тему по умолчанию)
+    resetSettings()
+    
+    // Перезагружаем страницу для применения всех изменений
+    setTimeout(() => {
+      window.location.reload()
+    }, 500)
+  }
+  
+  showResetConfirm.value = false
+  addNotification(t('settings.dataReset'), 'success')
 }
 
 useHead({
@@ -253,6 +315,75 @@ input:checked + .slider:before {
   background: #3b82f6;
   color: white;
   border-color: #3b82f6;
+}
+
+.btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-danger {
+  background: #ef4444;
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #dc2626;
+}
+
+.btn-secondary {
+  background: var(--btn-secondary-bg, #f1f5f9);
+  color: var(--btn-secondary-text, #475569);
+}
+
+.btn-secondary:hover {
+  background: var(--btn-secondary-hover, #e2e8f0);
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+}
+
+.modal-content {
+  background: var(--bg-secondary, white);
+  border-radius: 20px;
+  padding: 32px;
+  max-width: 400px;
+  width: 90%;
+}
+
+.confirm-modal h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary, #1e293b);
+  margin-bottom: 12px;
+}
+
+.confirm-modal p {
+  font-size: 14px;
+  color: var(--text-secondary, #64748b);
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
 }
 
 @media (max-width: 600px) {

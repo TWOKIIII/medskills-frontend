@@ -120,7 +120,6 @@ const categories = [
   { id: 'traumatology', nameKey: 'tests.traumatology', icon: '🦴' },
   { id: 'cardiology', nameKey: 'tests.cardiology', icon: '❤️' },
   { id: 'rehabilitation', nameKey: 'tests.rehabilitation', icon: '🏋️' },
-  { id: 'pharmacology', nameKey: 'tests.pharmacology', icon: '💊' },
   { id: 'nutrition', nameKey: 'tests.nutrition', icon: '🥗' }
 ]
 
@@ -160,17 +159,6 @@ const articles = [
   },
   {
     id: 4,
-    titleKey: 'knowledge.article4.title',
-    descKey: 'knowledge.article4.desc',
-    contentKey: 'knowledge.article4.content',
-    categoryKey: 'tests.pharmacology',
-    category: 'pharmacology',
-    icon: '💊',
-    date: '2023-10-10',
-    views: 820
-  },
-  {
-    id: 5,
     titleKey: 'knowledge.article5.title',
     descKey: 'knowledge.article5.desc',
     contentKey: 'knowledge.article5.content',
@@ -181,7 +169,7 @@ const articles = [
     views: 2100
   },
   {
-    id: 6,
+    id: 5,
     titleKey: 'knowledge.article6.title',
     descKey: 'knowledge.article6.desc',
     contentKey: 'knowledge.article6.content',

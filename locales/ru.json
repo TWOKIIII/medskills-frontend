@@ -35,14 +35,20 @@
   },
   "settings": {
     "title": "Настройки",
-    "notifications": "Уведомления",
-    "notificationsDesc": "Получать уведомления о тестах и обновлениях",
-    "language": "Язык",
-    "languageDesc": "Выберите язык интерфейса",
-    "theme": "Тема",
-    "themeDesc": "Выберите тему оформления",
-    "light": "Светлая",
-    "dark": "Тёмная"
+  "notifications": "Уведомления",
+  "notificationsDesc": "Получать уведомления о тестах и обновлениях",
+  "language": "Язык",
+  "languageDesc": "Выберите язык интерфейса",
+  "theme": "Тема",
+  "themeDesc": "Выберите тему оформления",
+  "light": "Светлая",
+  "dark": "Тёмная",
+  "resetData": "Сброс данных",
+  "resetDataDesc": "Сбросить все локальные данные приложения",
+  "reset": "Сбросить",
+  "confirmReset": "Подтвердите сброс",
+  "confirmResetDesc": "Все ваши настройки, прогресс тестов и данные профиля будут сброшены. Это действие нельзя отменить.",
+  "dataReset": "Все данные сброшены"
   },
   "tests": {
     "title": "Тесты",
@@ -105,7 +111,14 @@
     "biomechanicsBasic": "Основы биомеханики",
     "biomechanicsBasicDesc": "Базовые принципы движения человека",
     "biomechanicsRunning": "Биомеханика бега",
-    "biomechanicsRunningDesc": "Анализ техники бега и профилактика травм"
+    "biomechanicsRunningDesc": "Анализ техники бега и профилактика травм",
+    "backToTests": "Назад к тестам",
+  "question": "Вопрос",
+  "previous": "Назад",
+  "next": "Далее",
+  "finish": "Завершить",
+  "testCompleted": "Тест завершён!",
+  "correctAnswers": "правильных ответов"
   },
   "doctor": {
     "specialization": "Администратор",

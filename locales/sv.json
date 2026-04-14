@@ -105,7 +105,14 @@
     "biomechanicsBasic": "Grundläggande biomekanik",
     "biomechanicsBasicDesc": "Grundläggande principer för mänsklig rörelse",
     "biomechanicsRunning": "Löpbiomekanik",
-    "biomechanicsRunningDesc": "Analys av löpteknik och skadeförebyggande"
+    "biomechanicsRunningDesc": "Analys av löpteknik och skadeförebyggande",
+    "backToTests": "Tillbaka till tester",
+  "question": "Fråga",
+  "previous": "Föregående",
+  "next": "Nästa",
+  "finish": "Avsluta",
+  "testCompleted": "Test slutfört!",
+  "correctAnswers": "rätta svar"
   },
   "doctor": {
     "specialization": "Administratör",

@@ -9,7 +9,6 @@
         <p class="subtitle">{{ t('tests.subtitle') }}</p>
       </div>
 
-      <!-- Хлебные крошки -->
       <div class="breadcrumbs" v-if="selectedCategory">
         <button class="back-btn" @click="selectedCategory = null">
           <span>←</span> {{ t('tests.backToCategories') }}
@@ -18,9 +17,7 @@
       </div>
 
       <div class="main-content">
-        <!-- Левая колонка -->
         <div class="left-column">
-          <!-- Выбор категории -->
           <div class="categories-section" v-if="!selectedCategory">
             <div class="categories-grid">
               <div 
@@ -40,7 +37,6 @@
             </div>
           </div>
 
-          <!-- Тесты выбранной категории -->
           <div class="tests-section" v-else>
             <div class="category-info">
               <div class="category-header">
@@ -61,7 +57,7 @@
                 :status="test.status"
                 :progress="test.progress"
                 :index="index"
-                @action="handleTestAction(test)"
+                @action="(data) => handleTestAction(test, data)"
               />
               
               <div v-if="filteredTests.length === 0" class="empty-tests">
@@ -71,7 +67,6 @@
           </div>
         </div>
 
-        <!-- Правая колонка -->
         <div class="info-section">
           <div class="specialization-info">
             <div class="info-card">
@@ -116,49 +111,31 @@
 import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useNotifications } from '~/composables/useNotifications'
+import { useTests } from '~/composables/useTests'
+import { navigateTo } from 'nuxt/app'
 
 const { t, locale } = useI18n()
 const { addNotification } = useNotifications()
+const { tests, startTest } = useTests()
 
 const selectedCategory = ref(null)
 
+// Только 4 категории
 const categories = [
-  { id: 'traumatology', nameKey: 'tests.traumatology', descKey: 'tests.traumatologyDesc', icon: '🦴', testsCount: 1 },
-  { id: 'cardiology', nameKey: 'tests.cardiology', descKey: 'tests.cardiologyDesc', icon: '❤️', testsCount: 1 },
-  { id: 'rehabilitation', nameKey: 'tests.rehabilitation', descKey: 'tests.rehabilitationDesc', icon: '🏋️', testsCount: 1 },
-  { id: 'pharmacology', nameKey: 'tests.pharmacology', descKey: 'tests.pharmacologyDesc', icon: '💊', testsCount: 1 },
-  { id: 'nutrition', nameKey: 'tests.nutrition', descKey: 'tests.nutritionDesc', icon: '🥗', testsCount: 1 },
-  { id: 'biomechanics', nameKey: 'tests.biomechanics', descKey: 'tests.biomechanicsDesc', icon: '🏃', testsCount: 1 }
-]
-
-const allTests = [
-  // Травматология - 1 тест (не начатый)
-  { id: 1, category: 'traumatology', titleKey: 'tests.traumatologyBasic', descriptionKey: 'tests.traumatologyBasicDesc', status: 'new', progress: null },
-  
-  // Кардиология - 1 тест (не начатый)
-  { id: 2, category: 'cardiology', titleKey: 'tests.cardiologyBasic', descriptionKey: 'tests.cardiologyBasicDesc', status: 'new', progress: null },
-  
-  // Реабилитация - 1 тест (не начатый)
-  { id: 3, category: 'rehabilitation', titleKey: 'tests.rehabilitationBasic', descriptionKey: 'tests.rehabilitationBasicDesc', status: 'new', progress: null },
-  
-  // Фармакология - 1 тест (не начатый)
-  { id: 4, category: 'pharmacology', titleKey: 'tests.pharmacologyBasic', descriptionKey: 'tests.pharmacologyBasicDesc', status: 'new', progress: null },
-  
-  // Питание - 1 тест (не начатый)
-  { id: 5, category: 'nutrition', titleKey: 'tests.nutritionBasic', descriptionKey: 'tests.nutritionBasicDesc', status: 'new', progress: null },
-  
-  // Биомеханика - 1 тест (не начатый)
-  { id: 6, category: 'biomechanics', titleKey: 'tests.biomechanicsBasic', descriptionKey: 'tests.biomechanicsBasicDesc', status: 'new', progress: null }
+  { id: 'traumatology', nameKey: 'tests.traumatology', descKey: 'tests.traumatologyDesc', icon: '🦴', testsCount: 3 },
+  { id: 'cardiology', nameKey: 'tests.cardiology', descKey: 'tests.cardiologyDesc', icon: '❤️', testsCount: 3 },
+  { id: 'rehabilitation', nameKey: 'tests.rehabilitation', descKey: 'tests.rehabilitationDesc', icon: '🏋️', testsCount: 3 },
+  { id: 'nutrition', nameKey: 'tests.nutrition', descKey: 'tests.nutritionDesc', icon: '🥗', testsCount: 3 }
 ]
 
 const filteredTests = computed(() => {
   if (!selectedCategory.value) return []
-  return allTests.filter(t => t.category === selectedCategory.value.id)
+  return tests.value.filter(t => t.category === selectedCategory.value.id)
 })
 
 const categoriesWithProgress = computed(() => {
   return categories.map(cat => {
-    const catTests = allTests.filter(t => t.category === cat.id)
+    const catTests = tests.value.filter(t => t.category === cat.id)
     const totalProgress = catTests.reduce((sum, t) => sum + (t.progress || 0), 0)
     const avgProgress = catTests.length > 0 ? Math.round(totalProgress / catTests.length) : 0
     return { ...cat, progress: avgProgress }
@@ -169,16 +146,18 @@ const selectCategory = (category) => {
   selectedCategory.value = category
 }
 
-const handleTestAction = (test) => {
-  return (testData) => {
-    if (testData.status === 'continue') {
-      addNotification(`${t('tests.continuingTest')}: ${t(test.titleKey)}`, 'info')
-    } else if (testData.status === 'completed') {
-      addNotification(`${t('tests.retakingTest')}: ${t(test.titleKey)}`, 'info')
-    } else {
-      addNotification(`${t('tests.startingTest')}: ${t(test.titleKey)}`, 'success')
-    }
+const handleTestAction = (test, testData) => {
+  if (testData.status === 'continue') {
+    addNotification(`${t('tests.continuingTest')}: ${t(test.titleKey)}`, 'info')
+  } else if (testData.status === 'completed') {
+    addNotification(`${t('tests.retakingTest')}: ${t(test.titleKey)}`, 'info')
+  } else {
+    startTest(test.id)
+    addNotification(`${t('tests.startingTest')}: ${t(test.titleKey)}`, 'success')
   }
+  
+  // Передаём ID теста в URL
+  navigateTo(`/test/${test.id}`)
 }
 
 const goToRecommendedTest = (recId) => {
@@ -195,312 +174,50 @@ useHead({
 </script>
 
 <style scoped>
-.tests-page {
-  min-height: 100vh;
-  background: #f0f4f8;
-  padding: 20px;
-}
-
-.container {
-  max-width: 1400px;
-  margin: 0 auto;
-}
-
-.section-header {
-  margin-bottom: 24px;
-}
-
-.section-header h2 {
-  font-size: 32px;
-  font-weight: 700;
-  color: #1e293b;
-  margin-bottom: 8px;
-}
-
-.subtitle {
-  font-size: 16px;
-  color: #64748b;
-}
-
-.breadcrumbs {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 24px;
-}
-
-.back-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  background: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #3b82f6;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.back-btn:hover {
-  background: #eff6ff;
-}
-
-.current-category {
-  font-size: 18px;
-  font-weight: 600;
-  color: #1e293b;
-}
-
-.main-content {
-  display: grid;
-  grid-template-columns: 1fr 350px;
-  gap: 24px;
-}
-
-.left-column {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.categories-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-}
-
-.category-card {
-  background: white;
-  border-radius: 20px;
-  padding: 24px;
-  cursor: pointer;
-  transition: all 0.2s;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-}
-
-.category-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-}
-
-.category-icon {
-  font-size: 48px;
-  margin-bottom: 16px;
-}
-
-.category-card h3 {
-  font-size: 20px;
-  font-weight: 600;
-  color: #1e293b;
-  margin-bottom: 8px;
-}
-
-.category-card p {
-  font-size: 14px;
-  color: #64748b;
-  line-height: 1.5;
-  margin-bottom: 16px;
-}
-
-.category-stats {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 14px;
-  color: #3b82f6;
-  font-weight: 500;
-}
-
-.category-info {
-  background: white;
-  border-radius: 20px;
-  padding: 24px;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-}
-
-.category-header {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.category-icon-large {
-  font-size: 56px;
-}
-
-.category-header h3 {
-  font-size: 24px;
-  font-weight: 600;
-  color: #1e293b;
-  margin-bottom: 4px;
-}
-
-.category-header p {
-  font-size: 14px;
-  color: #64748b;
-}
-
-.tests-container {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.empty-tests {
-  text-align: center;
-  padding: 40px;
-  background: white;
-  border-radius: 20px;
-  color: #64748b;
-}
-
-.info-section {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.info-card {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 20px;
-  padding: 24px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  color: white;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-}
-
-.info-icon {
-  font-size: 40px;
-  width: 70px;
-  height: 70px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.info-content h4 {
-  font-size: 20px;
-  font-weight: 600;
-  margin-bottom: 8px;
-}
-
-.info-content p {
-  font-size: 14px;
-  opacity: 0.95;
-  line-height: 1.5;
-}
-
-.stats-card {
-  background: white;
-  border-radius: 20px;
-  padding: 24px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-}
-
-.stats-card h3 {
-  font-size: 18px;
-  font-weight: 600;
-  color: #1e293b;
-  margin-bottom: 20px;
-}
-
-.category-progress-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.category-progress-item {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.category-progress-header {
-  display: flex;
-  justify-content: space-between;
-  font-size: 14px;
-  color: #1e293b;
-}
-
-.progress-bar-small {
-  height: 6px;
-  background: #e2e8f0;
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.progress-fill-small {
-  height: 100%;
-  background: linear-gradient(90deg, #3b82f6 0%, #667eea 100%);
-  border-radius: 3px;
-}
-
-.recommendations-card {
-  background: white;
-  border-radius: 20px;
-  padding: 24px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-}
-
-.recommendations-card h3 {
-  font-size: 18px;
-  font-weight: 600;
-  color: #1e293b;
-  margin-bottom: 16px;
-}
-
-.recommendations-list {
-  list-style: none;
-}
-
-.recommendations-list li {
-  padding: 12px 0;
-  border-bottom: 1px solid #e2e8f0;
-  color: #475569;
-  font-size: 14px;
-  cursor: pointer;
-  transition: color 0.2s;
-}
-
-.recommendations-list li:last-child {
-  border-bottom: none;
-}
-
-.recommendations-list li:hover {
-  color: #3b82f6;
-}
-
-@media (max-width: 1024px) {
-  .main-content {
-    grid-template-columns: 1fr;
-  }
-  
-  .categories-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 768px) {
-  .tests-page {
-    padding: 12px;
-  }
-  
-  .section-header h2 {
-    font-size: 24px;
-  }
-  
-  .category-header {
-    flex-direction: column;
-    text-align: center;
-  }
-}
+.tests-page { min-height: 100vh; background: var(--bg-primary); padding: 20px; }
+.container { max-width: 1400px; margin: 0 auto; }
+.section-header { margin-bottom: 24px; }
+.section-header h2 { font-size: 32px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
+.subtitle { font-size: 16px; color: var(--text-secondary); }
+.breadcrumbs { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+.back-btn { display: flex; align-items: center; gap: 6px; padding: 8px 16px; background: var(--bg-secondary); border: var(--border-width) solid var(--border-color); border-radius: 8px; font-size: 14px; font-weight: 500; color: #3b82f6; cursor: pointer; transition: all 0.2s; }
+.back-btn:hover { background: var(--bg-hover); }
+.current-category { font-size: 18px; font-weight: 600; color: var(--text-primary); }
+.main-content { display: grid; grid-template-columns: 1fr 350px; gap: 24px; }
+.left-column { display: flex; flex-direction: column; gap: 20px; }
+.categories-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+.category-card { background: var(--bg-secondary); border-radius: 20px; padding: 24px; cursor: pointer; transition: all 0.2s; box-shadow: var(--card-shadow); border: var(--border-width) solid var(--border-color); }
+.category-card:hover { transform: translateY(-4px); box-shadow: var(--card-shadow-hover); }
+.category-icon { font-size: 48px; margin-bottom: 16px; }
+.category-card h3 { font-size: 20px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; }
+.category-card p { font-size: 14px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 16px; }
+.category-stats { display: flex; justify-content: space-between; align-items: center; font-size: 14px; color: #3b82f6; font-weight: 500; }
+.category-info { background: var(--bg-secondary); border-radius: 20px; padding: 24px; margin-bottom: 20px; box-shadow: var(--card-shadow); border: var(--border-width) solid var(--border-color); }
+.category-header { display: flex; align-items: center; gap: 20px; }
+.category-icon-large { font-size: 56px; }
+.category-header h3 { font-size: 24px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+.category-header p { font-size: 14px; color: var(--text-secondary); }
+.tests-container { display: flex; flex-direction: column; gap: 12px; }
+.empty-tests { text-align: center; padding: 40px; background: var(--bg-secondary); border-radius: 20px; color: var(--text-secondary); border: var(--border-width) solid var(--border-color); }
+.info-section { display: flex; flex-direction: column; gap: 20px; }
+.info-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; padding: 24px; display: flex; align-items: center; gap: 20px; color: white; box-shadow: var(--card-shadow); }
+.info-icon { font-size: 40px; width: 70px; height: 70px; background: rgba(255, 255, 255, 0.2); border-radius: 16px; display: flex; align-items: center; justify-content: center; }
+.info-content h4 { font-size: 20px; font-weight: 600; margin-bottom: 8px; color: white; }
+.info-content p { font-size: 14px; opacity: 0.95; line-height: 1.5; color: white; }
+.stats-card { background: var(--bg-secondary); border-radius: 20px; padding: 24px; box-shadow: var(--card-shadow); border: var(--border-width) solid var(--border-color); }
+.stats-card h3 { font-size: 18px; font-weight: 600; color: var(--text-primary); margin-bottom: 20px; }
+.category-progress-list { display: flex; flex-direction: column; gap: 16px; }
+.category-progress-item { display: flex; flex-direction: column; gap: 6px; }
+.category-progress-header { display: flex; justify-content: space-between; font-size: 14px; color: var(--text-primary); }
+.progress-bar-small { height: 6px; background: var(--border-color); border-radius: 3px; overflow: hidden; }
+.progress-fill-small { height: 100%; background: linear-gradient(90deg, #3b82f6 0%, #667eea 100%); border-radius: 3px; }
+.recommendations-card { background: var(--bg-secondary); border-radius: 20px; padding: 24px; box-shadow: var(--card-shadow); border: var(--border-width) solid var(--border-color); }
+.recommendations-card h3 { font-size: 18px; font-weight: 600; color: var(--text-primary); margin-bottom: 16px; }
+.recommendations-list { list-style: none; }
+.recommendations-list li { padding: 12px 0; border-bottom: 1px solid var(--border-color); color: var(--text-secondary); font-size: 14px; cursor: pointer; transition: color 0.2s; }
+.recommendations-list li:last-child { border-bottom: none; }
+.recommendations-list li:hover { color: #3b82f6; }
+.recommendations-list li::before { content: "→ "; color: #3b82f6; font-weight: 600; margin-right: 8px; }
+@media (max-width: 1024px) { .main-content { grid-template-columns: 1fr; } .categories-grid { grid-template-columns: 1fr; } }
+@media (max-width: 768px) { .tests-page { padding: 12px; } .section-header h2 { font-size: 24px; } .category-header { flex-direction: column; text-align: center; } }
 </style>

@@ -105,7 +105,14 @@
     "biomechanicsBasic": "Bases de la biomécanique",
     "biomechanicsBasicDesc": "Principes de base du mouvement humain",
     "biomechanicsRunning": "Biomécanique de la course",
-    "biomechanicsRunningDesc": "Analyse de la technique de course et prévention des blessures"
+    "biomechanicsRunningDesc": "Analyse de la technique de course et prévention des blessures",
+    "backToTests": "Retour aux tests",
+  "question": "Question",
+  "previous": "Précédent",
+  "next": "Suivant",
+  "finish": "Terminer",
+  "testCompleted": "Test terminé !",
+  "correctAnswers": "bonnes réponses"
   },
   "doctor": {
     "specialization": "Administrateur",
