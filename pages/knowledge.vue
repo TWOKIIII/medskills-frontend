@@ -132,7 +132,7 @@ const articles = [
     categoryKey: 'tests.traumatology',
     category: 'traumatology',
     icon: '🦴',
-    date: '2024-01-01',
+    date: '2026-01-01',
     views: 1250
   },
   {
@@ -143,7 +143,7 @@ const articles = [
     categoryKey: 'tests.cardiology',
     category: 'cardiology',
     icon: '❤️',
-    date: '2023-12-15',
+    date: '2026-02-15',
     views: 980
   },
   {
@@ -154,29 +154,29 @@ const articles = [
     categoryKey: 'tests.rehabilitation',
     category: 'rehabilitation',
     icon: '🏋️',
-    date: '2023-11-20',
+    date: '2026-03-20',
     views: 1560
   },
   {
     id: 4,
-    titleKey: 'knowledge.article5.title',
-    descKey: 'knowledge.article5.desc',
-    contentKey: 'knowledge.article5.content',
+    titleKey: 'knowledge.article4.title',
+    descKey: 'knowledge.article4.desc',
+    contentKey: 'knowledge.article4.content',
     categoryKey: 'tests.nutrition',
     category: 'nutrition',
     icon: '🥗',
-    date: '2023-09-05',
+    date: '2026-04-05',
     views: 2100
   },
   {
     id: 5,
-    titleKey: 'knowledge.article6.title',
-    descKey: 'knowledge.article6.desc',
-    contentKey: 'knowledge.article6.content',
+    titleKey: 'knowledge.article5.title',
+    descKey: 'knowledge.article5.desc',
+    contentKey: 'knowledge.article5.content',
     categoryKey: 'tests.traumatology',
     category: 'traumatology',
     icon: '🦵',
-    date: '2023-08-15',
+    date: '2026-05-15',
     views: 750
   }
 ]

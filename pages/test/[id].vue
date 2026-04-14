@@ -94,7 +94,7 @@ import { useTests } from '~/composables/useTests'
 
 const route = useRoute()
 const router = useRouter()
-const { t } = useI18n()
+const { t, tm } = useI18n()
 const { addNotification } = useNotifications()
 const { getTest, completeTest, saveProgress, resetTest } = useTests()
 
@@ -106,28 +106,34 @@ const currentQuestionIndex = ref(0)
 const selectedOption = ref(null)
 const isCompleted = ref(false)
 
-// Данные вопросов для разных тестов
-const questionsData = {
-  // Травматология
-  1: [ // traumatologyBasic
-    { text: 'Какое исследование является "золотым стандартом" для диагностики повреждений менисков?', options: ['Рентгенография', 'УЗИ', 'МРТ', 'Артроскопия'], correct: 2 },
-    { text: 'Какой симптом характерен для повреждения передней крестообразной связки?', options: ['Симптом Лассега', 'Симптом "переднего выдвижного ящика"', 'Симптом Тренделенбурга', 'Симптом Мак-Мюррея'], correct: 1 },
-    { text: 'Какая степень растяжения связок характеризуется полным разрывом?', options: ['I степень', 'II степень', 'III степень', 'IV степень'], correct: 2 },
-    { text: 'Какое лечение рекомендуется при полном разрыве ахиллова сухожилия у спортсмена?', options: ['Консервативное (гипс)', 'Хирургическое', 'Физиотерапия', 'Наложение тейпов'], correct: 1 },
-    { text: 'Какой срок иммобилизации рекомендуется при переломе лодыжки без смещения?', options: ['1-2 недели', '3-4 недели', '6-8 недель', '10-12 недель'], correct: 2 }
-  ],
-  // Добавь вопросы для остальных ID тестов (2-12)
-  2: [ { text: 'Вопрос 1 для теста 2', options: ['A', 'B', 'C', 'D'], correct: 0 }, { text: 'Вопрос 2', options: ['A', 'B', 'C', 'D'], correct: 1 }, { text: 'Вопрос 3', options: ['A', 'B', 'C', 'D'], correct: 2 } ],
-  3: [ { text: 'Вопрос 1 для теста 3', options: ['A', 'B', 'C', 'D'], correct: 0 }, { text: 'Вопрос 2', options: ['A', 'B', 'C', 'D'], correct: 1 }, { text: 'Вопрос 3', options: ['A', 'B', 'C', 'D'], correct: 2 } ],
-  4: [ { text: 'Какая частота сердечных сокращений считается брадикардией у спортсменов?', options: ['Менее 40 уд/мин', 'Менее 50 уд/мин', 'Менее 60 уд/мин', 'Менее 70 уд/мин'], correct: 0 }, { text: 'Какой метод обязателен для кардиологического скрининга?', options: ['ЭКГ', 'ЭхоКГ', 'Холтер', 'Все'], correct: 3 }, { text: 'Что характерно для "спортивного сердца"?', options: ['Брадикардия', 'Гипертрофия', 'Высокий вольтаж', 'Всё'], correct: 3 } ],
-  5: [ { text: 'Вопрос 1 для теста 5', options: ['A', 'B', 'C', 'D'], correct: 0 }, { text: 'Вопрос 2', options: ['A', 'B', 'C', 'D'], correct: 1 }, { text: 'Вопрос 3', options: ['A', 'B', 'C', 'D'], correct: 2 } ],
-  6: [ { text: 'Вопрос 1 для теста 6', options: ['A', 'B', 'C', 'D'], correct: 0 }, { text: 'Вопрос 2', options: ['A', 'B', 'C', 'D'], correct: 1 }, { text: 'Вопрос 3', options: ['A', 'B', 'C', 'D'], correct: 2 } ],
-  7: [ { text: 'Какой этап реабилитации первый?', options: ['Иммобилизация', 'ЛФК', 'Массаж', 'Физиотерапия'], correct: 0 }, { text: 'Когда начинать активную реабилитацию?', options: ['Сразу', 'После снятия боли', 'После сращения', 'Через месяц'], correct: 1 }, { text: 'Что важно при реабилитации?', options: ['Постепенность', 'Индивидуальность', 'Комплексность', 'Всё'], correct: 3 } ],
-  8: [ { text: 'Вопрос 1 для теста 8', options: ['A', 'B', 'C', 'D'], correct: 0 }, { text: 'Вопрос 2', options: ['A', 'B', 'C', 'D'], correct: 1 }, { text: 'Вопрос 3', options: ['A', 'B', 'C', 'D'], correct: 2 } ],
-  9: [ { text: 'Вопрос 1 для теста 9', options: ['A', 'B', 'C', 'D'], correct: 0 }, { text: 'Вопрос 2', options: ['A', 'B', 'C', 'D'], correct: 1 }, { text: 'Вопрос 3', options: ['A', 'B', 'C', 'D'], correct: 2 } ],
-  10: [ { text: 'Какое соотношение БЖУ рекомендуется спортсменам?', options: ['30/30/40', '20/30/50', '40/30/30', '50/20/30'], correct: 0 }, { text: 'Когда лучше есть перед тренировкой?', options: ['За 3-4 часа', 'За 1-2 часа', 'За 30 мин', 'Не есть'], correct: 1 }, { text: 'Что важно для восстановления?', options: ['Белок', 'Углеводы', 'Вода', 'Всё'], correct: 3 } ],
-  11: [ { text: 'Вопрос 1 для теста 11', options: ['A', 'B', 'C', 'D'], correct: 0 }, { text: 'Вопрос 2', options: ['A', 'B', 'C', 'D'], correct: 1 }, { text: 'Вопрос 3', options: ['A', 'B', 'C', 'D'], correct: 2 } ],
-  12: [ { text: 'Вопрос 1 для теста 12', options: ['A', 'B', 'C', 'D'], correct: 0 }, { text: 'Вопрос 2', options: ['A', 'B', 'C', 'D'], correct: 1 }, { text: 'Вопрос 3', options: ['A', 'B', 'C', 'D'], correct: 2 } ]
+const testQuestionKeys = {
+  1: 'traumatologyBasic',
+  2: 'traumatologyJoints',
+  3: 'traumatologySpine',
+  4: 'cardiologyBasic',
+  5: 'cardiologyECG',
+  6: 'cardiologyStress',
+  7: 'rehabilitationBasic',
+  8: 'rehabilitationPostOp',
+  9: 'rehabilitationSports',
+  10: 'nutritionBasic',
+  11: 'nutritionCompetition',
+  12: 'nutritionRecovery'
+}
+
+const correctAnswers = {
+  traumatologyBasic: [2, 1, 2, 1, 2],
+  traumatologyJoints: [1, 1, 1, 1, 2],
+  traumatologySpine: [2, 1, 3, 0, 1],
+  cardiologyBasic: [0, 3, 3, 3, 1],
+  cardiologyECG: [1, 2, 1, 3, 2],
+  cardiologyStress: [0, 2, 1, 1, 2],
+  rehabilitationBasic: [0, 1, 3, 0, 1],
+  rehabilitationPostOp: [1, 2, 1, 2, 2],
+  rehabilitationSports: [0, 2, 3, 3, 2],
+  nutritionBasic: [0, 1, 2, 1, 0],
+  nutritionCompetition: [1, 3, 0, 1, 1],
+  nutritionRecovery: [2, 2, 2, 1, 3]
 }
 
 const currentQuestion = computed(() => questions.value[currentQuestionIndex.value])
@@ -137,7 +143,9 @@ const progress = computed(() => {
 })
 
 const score = computed(() => {
-  return answers.value.filter((ans, idx) => ans === questions.value[idx]?.correct).length
+  const key = testQuestionKeys[testId] || 'traumatologyBasic'
+  const corrects = correctAnswers[key] || []
+  return answers.value.filter((ans, idx) => ans === corrects[idx]).length
 })
 
 const percentage = computed(() => {
@@ -150,16 +158,39 @@ const resultIcon = computed(() => {
   return '📚'
 })
 
+const loadTestQuestions = () => {
+  const key = testQuestionKeys[testId] || 'traumatologyBasic'
+  const qs = []
+  
+  for (let i = 1; i <= 5; i++) {
+    const questionText = tm(`testQuestions.${key}.q${i}`)
+    const options = tm(`testQuestions.${key}.q${i}_options`)
+    
+    if (typeof questionText === 'string' && !questionText.includes('testQuestions')) {
+      qs.push({
+        text: questionText,
+        options: Array.isArray(options) ? options : ['Вариант 1', 'Вариант 2', 'Вариант 3', 'Вариант 4']
+      })
+    } else {
+      qs.push({
+        text: `Вопрос ${i}`,
+        options: ['Вариант 1', 'Вариант 2', 'Вариант 3', 'Вариант 4']
+      })
+    }
+  }
+  
+  questions.value = qs
+}
+
 const loadTest = () => {
   const test = getTest(testId)
   if (test) {
     testData.value = test
-    questions.value = questionsData[testId] || questionsData[1]
+    loadTestQuestions()
     
     if (test.status === 'completed') {
       isCompleted.value = true
     } else if (test.status === 'continue' && test.currentQuestion > 0) {
-      // Восстанавливаем прогресс
       currentQuestionIndex.value = test.currentQuestion
       answers.value = [...test.answers]
       selectedOption.value = answers.value[currentQuestionIndex.value] ?? null

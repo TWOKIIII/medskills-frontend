@@ -68,7 +68,6 @@ const handleAction = () => {
 </script>
 
 <style scoped>
-/* стили без изменений */
 .test-card {
   background: white;
   border-radius: 16px;

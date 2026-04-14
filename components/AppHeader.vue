@@ -105,7 +105,6 @@ const formatTime = (timestamp) => {
   const diff = now - date
   
   if (diff < 60000) {
-    // Используем перевод в зависимости от текущего языка
     const translations = {
       ru: 'только что',
       en: 'just now',
@@ -158,8 +157,17 @@ const changeLanguage = (code) => {
   
   if (settings.value.notifications) {
     const langName = getLanguageName(code)
-    const message = code === 'ru' ? `Язык изменён на ${langName}` : `Language changed to ${langName}`
-    addNotification(message, 'success')
+    const messages = {
+      ru: `Язык изменён на ${langName}`,
+      en: `Language changed to ${langName}`,
+      de: `Sprache auf ${langName} geändert`,
+      fr: `Langue changée en ${langName}`,
+      be: `Мова зменена на ${langName}`,
+      kk: `Тіл ${langName} тіліне өзгертілді`,
+      pl: `Język zmieniony na ${langName}`,
+      sv: `Språk ändrat till ${langName}`
+    }
+    addNotification(messages[code] || messages.en, 'success')
   }
 }
 

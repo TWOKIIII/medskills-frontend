@@ -132,13 +132,19 @@ const handleChangeLanguage = (event) => {
   setLocale(newLocale)
   
   if (settings.value.notifications) {
-    const languageName = getLanguageName(newLocale)
-    const messages = {
-      ru: `Язык изменён на ${languageName}`,
-      en: `Language changed to ${languageName}`
-    }
-    addNotification(messages[newLocale] || `Language changed to ${languageName}`, 'success')
+  const languageName = getLanguageName(newLocale)
+  const messages = {
+    ru: `Язык изменён на ${languageName}`,
+    en: `Language changed to ${languageName}`,
+    de: `Sprache auf ${languageName} geändert`,
+    fr: `Langue changée en ${languageName}`,
+    be: `Мова зменена на ${languageName}`,
+    kk: `Тіл ${languageName} тіліне өзгертілді`,
+    pl: `Język zmieniony na ${languageName}`,
+    sv: `Språk ändrat till ${languageName}`
   }
+  addNotification(messages[newLocale] || messages.en, 'success')
+}
 }
 
 const handleSetTheme = (theme) => {
@@ -147,21 +153,15 @@ const handleSetTheme = (theme) => {
 }
 
 const handleResetData = () => {
-  // Сбрасываем все данные
   if (process.client) {
-    // Очищаем localStorage
     localStorage.clear()
-    
-    // Сбрасываем тесты
+
     resetAllTests()
-    
-    // Сбрасываем профиль
+
     resetProfile()
     
-    // Сбрасываем настройки (сохраняем язык и тему по умолчанию)
     resetSettings()
     
-    // Перезагружаем страницу для применения всех изменений
     setTimeout(() => {
       window.location.reload()
     }, 500)

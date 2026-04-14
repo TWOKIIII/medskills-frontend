@@ -90,35 +90,35 @@
               <div class="contact-icon">📍</div>
               <div class="contact-info">
                 <h4>{{ t('help.address') }}</h4>
-                <p>г. Иркутск, ул. Советская</p>
+                <p>{{ t('help.addressText') }}</p>
               </div>
             </div>
           </div>
         </div>
         
         <!-- Документация -->
-        <div class="help-section">
-          <h3>{{ t('help.documentation') }}</h3>
-          
-          <div class="docs-list">
-            <a href="#" class="doc-link">
-              <span>📘</span>
-              <span>Руководство пользователя</span>
-            </a>
-            <a href="#" class="doc-link">
-              <span>📗</span>
-              <span>Инструкция по тестированию</span>
-            </a>
-            <a href="#" class="doc-link">
-              <span>📙</span>
-              <span>API документация</span>
-            </a>
-            <a href="#" class="doc-link">
-              <span>📕</span>
-              <span>Часто задаваемые вопросы (PDF)</span>
-            </a>
-          </div>
-        </div>
+<div class="help-section">
+  <h3>{{ t('help.documentation') }}</h3>
+  
+  <div class="docs-list">
+    <a href="#" class="doc-link" @click.prevent>
+      <span>📘</span>
+      <span>{{ t('help.userGuide') }}</span>
+    </a>
+    <a href="#" class="doc-link" @click.prevent>
+      <span>📗</span>
+      <span>{{ t('help.testingInstructions') }}</span>
+    </a>
+    <a href="#" class="doc-link" @click.prevent>
+      <span>📙</span>
+      <span>{{ t('help.apiDocumentation') }}</span>
+    </a>
+    <a href="#" class="doc-link" @click.prevent>
+      <span>📕</span>
+      <span>{{ t('help.faqPdf') }}</span>
+    </a>
+  </div>
+</div>
         
         <!-- Форма обратной связи -->
         <div class="help-section">

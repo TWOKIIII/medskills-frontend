@@ -1,24 +1,18 @@
-// composables/useTests.js
 import { ref } from 'vue'
 
-// Начальные данные тестов (4 категории)
 const defaultTests = [
-  // Травматология - 3 теста
   { id: 1, category: 'traumatology', categoryKey: 'tests.traumatology', titleKey: 'tests.traumatologyBasic', descriptionKey: 'tests.traumatologyBasicDesc', status: 'new', progress: null, score: null, completedDate: null, currentQuestion: 0, answers: [] },
   { id: 2, category: 'traumatology', categoryKey: 'tests.traumatology', titleKey: 'tests.traumatologyJoints', descriptionKey: 'tests.traumatologyJointsDesc', status: 'new', progress: null, score: null, completedDate: null, currentQuestion: 0, answers: [] },
   { id: 3, category: 'traumatology', categoryKey: 'tests.traumatology', titleKey: 'tests.traumatologySpine', descriptionKey: 'tests.traumatologySpineDesc', status: 'new', progress: null, score: null, completedDate: null, currentQuestion: 0, answers: [] },
   
-  // Кардиология - 3 теста
   { id: 4, category: 'cardiology', categoryKey: 'tests.cardiology', titleKey: 'tests.cardiologyBasic', descriptionKey: 'tests.cardiologyBasicDesc', status: 'new', progress: null, score: null, completedDate: null, currentQuestion: 0, answers: [] },
   { id: 5, category: 'cardiology', categoryKey: 'tests.cardiology', titleKey: 'tests.cardiologyECG', descriptionKey: 'tests.cardiologyECGDesc', status: 'new', progress: null, score: null, completedDate: null, currentQuestion: 0, answers: [] },
   { id: 6, category: 'cardiology', categoryKey: 'tests.cardiology', titleKey: 'tests.cardiologyStress', descriptionKey: 'tests.cardiologyStressDesc', status: 'new', progress: null, score: null, completedDate: null, currentQuestion: 0, answers: [] },
-  
-  // Реабилитация - 3 теста
+
   { id: 7, category: 'rehabilitation', categoryKey: 'tests.rehabilitation', titleKey: 'tests.rehabilitationBasic', descriptionKey: 'tests.rehabilitationBasicDesc', status: 'new', progress: null, score: null, completedDate: null, currentQuestion: 0, answers: [] },
   { id: 8, category: 'rehabilitation', categoryKey: 'tests.rehabilitation', titleKey: 'tests.rehabilitationPostOp', descriptionKey: 'tests.rehabilitationPostOpDesc', status: 'new', progress: null, score: null, completedDate: null, currentQuestion: 0, answers: [] },
   { id: 9, category: 'rehabilitation', categoryKey: 'tests.rehabilitation', titleKey: 'tests.rehabilitationSports', descriptionKey: 'tests.rehabilitationSportsDesc', status: 'new', progress: null, score: null, completedDate: null, currentQuestion: 0, answers: [] },
   
-  // Питание - 3 теста
   { id: 10, category: 'nutrition', categoryKey: 'tests.nutrition', titleKey: 'tests.nutritionBasic', descriptionKey: 'tests.nutritionBasicDesc', status: 'new', progress: null, score: null, completedDate: null, currentQuestion: 0, answers: [] },
   { id: 11, category: 'nutrition', categoryKey: 'tests.nutrition', titleKey: 'tests.nutritionCompetition', descriptionKey: 'tests.nutritionCompetitionDesc', status: 'new', progress: null, score: null, completedDate: null, currentQuestion: 0, answers: [] },
   { id: 12, category: 'nutrition', categoryKey: 'tests.nutrition', titleKey: 'tests.nutritionRecovery', descriptionKey: 'tests.nutritionRecoveryDesc', status: 'new', progress: null, score: null, completedDate: null, currentQuestion: 0, answers: [] }

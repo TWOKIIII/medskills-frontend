@@ -1,4 +1,3 @@
-// composables/useLanguage.js
 import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useSettings } from './useSettings'
@@ -14,7 +13,6 @@ const languages = [
   { code: 'sv', name: 'Svenska', short: 'SE', flagClass: 'fi fi-se' }
 ]
 
-// Глобальная переменная для хранения текущей локали
 const currentLocale = ref('ru')
 
 export const useLanguage = () => {
@@ -34,13 +32,11 @@ export const useLanguage = () => {
   const loadLocale = () => {
     if (!process.client) return
     
-    // Загружаем из settings
     const { settings } = useSettings()
     if (settings.value.locale) {
       currentLocale.value = settings.value.locale
       locale.value = settings.value.locale
     } else {
-      // Если нет, ставим русский по умолчанию
       currentLocale.value = 'ru'
       locale.value = 'ru'
       setSettingsLocale('ru')
