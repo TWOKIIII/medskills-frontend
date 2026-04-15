@@ -1,14 +1,13 @@
-// composables/useProfile.js
 import { ref } from 'vue'
 
 const defaultProfile = {
   name: 'Лятохов Глеб Игоревич',
-  email: 'lyatokhov38@gmail.com',
-  phone: '+7 (950) 082-81-11',
+  email: 'MedSkills@support.com',
+  phone: '+7 (950) 000-00-00',
   specialization: 'Администратор',
-  birthDate: '17.01.2005',
-  experience: '21 год',
-  shortName: 'Админ. Лятохов'
+  birthDate: '01.01.2000',
+  experience: '1 год',
+  shortName: 'Глеб'
 }
 
 const profile = ref({ ...defaultProfile })
@@ -32,8 +31,9 @@ export const useProfile = () => {
   
   const saveProfile = (data) => {
     profile.value = { ...profile.value, ...data }
-    const firstName = profile.value.name.split(' ')[0]
-    profile.value.shortName = `Админ. ${firstName}`
+    const nameParts = profile.value.name.split(' ')
+    const firstName = nameParts[1] || nameParts[0]  // "Глеб"
+    profile.value.shortName = firstName 
     
     if (process.client) {
       localStorage.setItem('medskills_profile', JSON.stringify(profile.value))
