@@ -9,7 +9,6 @@
       </div>
       
       <div class="settings-card">
-        <!-- Уведомления -->
         <div class="setting-item">
           <div class="setting-info">
             <h3>{{ t('settings.notifications') }}</h3>
@@ -25,7 +24,6 @@
           </label>
         </div>
         
-        <!-- Язык -->
         <div class="setting-item">
           <div class="setting-info">
             <h3>{{ t('settings.language') }}</h3>
@@ -43,7 +41,6 @@
           </select>
         </div>
         
-        <!-- Тема -->
         <div class="setting-item">
           <div class="setting-info">
             <h3>{{ t('settings.theme') }}</h3>
@@ -67,7 +64,6 @@
           </div>
         </div>
 
-        <!-- Сброс данных -->
         <div class="setting-item">
           <div class="setting-info">
             <h3>{{ t('settings.resetData') }}</h3>
@@ -80,14 +76,13 @@
       </div>
     </div>
 
-    <!-- Модальное окно подтверждения -->
     <div class="modal" v-if="showResetConfirm" @click="showResetConfirm = false">
       <div class="modal-content confirm-modal" @click.stop>
         <h3>{{ t('settings.confirmReset') }}</h3>
         <p>{{ t('settings.confirmResetDesc') }}</p>
         <div class="modal-actions">
-          <button class="btn btn-danger" @click="handleResetData">
-            {{ t('settings.reset') }}
+          <button class="btn btn-danger" @click="handleResetData" :disabled="isResetting">
+            {{ isResetting ? '...' : t('settings.reset') }}
           </button>
           <button class="btn btn-secondary" @click="showResetConfirm = false">
             {{ t('profile.cancel') }}
@@ -117,6 +112,7 @@ const { resetAllTests } = useTests()
 const { resetProfile } = useProfile()
 
 const showResetConfirm = ref(false)
+const isResetting = ref(false)
 
 const handleToggleNotifications = () => {
   const enabled = toggleNotifications()
@@ -129,46 +125,51 @@ const handleToggleNotifications = () => {
 
 const handleChangeLanguage = (event) => {
   const newLocale = event.target.value
-  setLocale(newLocale)
-  
-  if (settings.value.notifications) {
-  const languageName = getLanguageName(newLocale)
-  const messages = {
-    ru: `Язык изменён на ${languageName}`,
-    en: `Language changed to ${languageName}`,
-    de: `Sprache auf ${languageName} geändert`,
-    fr: `Langue changée en ${languageName}`,
-    be: `Мова зменена на ${languageName}`,
-    kk: `Тіл ${languageName} тіліне өзгертілді`,
-    pl: `Język zmieniony na ${languageName}`,
-    sv: `Språk ändrat till ${languageName}`
+  if (setLocale(newLocale)) {
+    if (settings.value.notifications) {
+      const languageName = getLanguageName(newLocale)
+      const messages = {
+        ru: `Язык изменён на ${languageName}`,
+        en: `Language changed to ${languageName}`,
+        de: `Sprache auf ${languageName} geändert`,
+        fr: `Langue changée en ${languageName}`,
+        be: `Мова зменена на ${languageName}`,
+        kk: `Тіл ${languageName} тіліне өзгертілді`,
+        pl: `Język zmieniony na ${languageName}`,
+        sv: `Språk ändrat till ${languageName}`
+      }
+      addNotification(messages[newLocale] || messages.en, 'success')
+    }
+  } else {
+    addNotification('Ошибка при смене языка', 'error')
   }
-  addNotification(messages[newLocale] || messages.en, 'success')
-}
 }
 
 const handleSetTheme = (theme) => {
-  setSettingsTheme(theme)
-  setTheme(theme === 'dark')
+  if (setSettingsTheme(theme)) {
+    setTheme(theme === 'dark')
+  }
 }
 
 const handleResetData = () => {
-  if (process.client) {
-    localStorage.clear()
-
-    resetAllTests()
-
-    resetProfile()
-    
-    resetSettings()
-    
-    setTimeout(() => {
-      window.location.reload()
-    }, 500)
-  }
+  isResetting.value = true
   
-  showResetConfirm.value = false
-  addNotification(t('settings.dataReset'), 'success')
+  setTimeout(() => {
+    if (process.client) {
+      localStorage.clear()
+      resetAllTests()
+      resetProfile()
+      resetSettings()
+      
+      setTimeout(() => {
+        window.location.reload()
+      }, 300)
+    }
+    
+    showResetConfirm.value = false
+    addNotification(t('settings.dataReset'), 'success')
+    isResetting.value = false
+  }, 300)
 }
 
 useHead({
@@ -179,7 +180,7 @@ useHead({
 <style scoped>
 .settings-page {
   min-height: 100vh;
-  background: var(--bg-primary, #f0f4f8);
+  background: var(--bg-primary);
   padding: 20px;
 }
 
@@ -195,14 +196,15 @@ useHead({
 .section-header h2 {
   font-size: 32px;
   font-weight: 700;
-  color: var(--text-primary, #1e293b);
+  color: var(--text-primary);
 }
 
 .settings-card {
-  background: var(--bg-secondary, white);
+  background: var(--bg-secondary);
   border-radius: 20px;
   padding: 24px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--card-shadow);
+  border: var(--border-width) solid var(--border-color);
 }
 
 .setting-item {
@@ -210,7 +212,7 @@ useHead({
   align-items: center;
   justify-content: space-between;
   padding: 20px 0;
-  border-bottom: 1px solid var(--border-color, #e2e8f0);
+  border-bottom: var(--border-width) solid var(--border-color);
 }
 
 .setting-item:last-child {
@@ -220,13 +222,13 @@ useHead({
 .setting-info h3 {
   font-size: 18px;
   font-weight: 600;
-  color: var(--text-primary, #1e293b);
+  color: var(--text-primary);
   margin-bottom: 4px;
 }
 
 .setting-info p {
   font-size: 14px;
-  color: var(--text-secondary, #64748b);
+  color: var(--text-secondary);
 }
 
 .switch {
@@ -252,6 +254,7 @@ useHead({
   background-color: #cbd5e1;
   transition: 0.3s;
   border-radius: 26px;
+  border: var(--border-width) solid var(--border-color);
 }
 
 .slider:before {
@@ -276,11 +279,11 @@ input:checked + .slider:before {
 
 .language-select {
   padding: 10px 16px;
-  border: 1px solid var(--border-color, #e2e8f0);
+  border: var(--border-width) solid var(--border-color);
   border-radius: 8px;
   font-size: 14px;
-  background: var(--bg-secondary, white);
-  color: var(--text-primary, #1e293b);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
   cursor: pointer;
   min-width: 220px;
 }
@@ -297,18 +300,18 @@ input:checked + .slider:before {
 
 .theme-btn {
   padding: 10px 20px;
-  border: 1px solid var(--border-color, #e2e8f0);
+  border: var(--border-width) solid var(--border-color);
   border-radius: 8px;
-  background: var(--bg-secondary, white);
-  color: var(--text-primary, #1e293b);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
   cursor: pointer;
   transition: all 0.2s;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .theme-btn:hover {
-  background: var(--bg-hover, #f8fafc);
+  background: var(--bg-hover);
 }
 
 .theme-btn.active {
@@ -321,7 +324,7 @@ input:checked + .slider:before {
   padding: 10px 20px;
   border-radius: 8px;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   border: none;
   cursor: pointer;
   transition: all 0.2s;
@@ -330,19 +333,27 @@ input:checked + .slider:before {
 .btn-danger {
   background: #ef4444;
   color: white;
+  border: var(--border-width) solid #ef4444;
 }
 
 .btn-danger:hover {
   background: #dc2626;
+  border-color: #dc2626;
+}
+
+.btn-danger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .btn-secondary {
-  background: var(--btn-secondary-bg, #f1f5f9);
-  color: var(--btn-secondary-text, #475569);
+  background: var(--btn-secondary-bg);
+  color: var(--btn-secondary-text);
+  border: var(--border-width) solid var(--border-color);
 }
 
 .btn-secondary:hover {
-  background: var(--btn-secondary-hover, #e2e8f0);
+  background: var(--btn-secondary-hover);
 }
 
 .modal {
@@ -351,7 +362,7 @@ input:checked + .slider:before {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -359,23 +370,24 @@ input:checked + .slider:before {
 }
 
 .modal-content {
-  background: var(--bg-secondary, white);
+  background: var(--bg-secondary);
   border-radius: 20px;
   padding: 32px;
   max-width: 400px;
   width: 90%;
+  border: var(--border-width) solid var(--border-color);
 }
 
 .confirm-modal h3 {
   font-size: 20px;
   font-weight: 700;
-  color: var(--text-primary, #1e293b);
+  color: var(--text-primary);
   margin-bottom: 12px;
 }
 
 .confirm-modal p {
   font-size: 14px;
-  color: var(--text-secondary, #64748b);
+  color: var(--text-secondary);
   margin-bottom: 24px;
   line-height: 1.5;
 }

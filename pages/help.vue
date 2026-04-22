@@ -10,7 +10,6 @@
       </div>
       
       <div class="help-content">
-        <!-- FAQ -->
         <div class="help-section">
           <h3>{{ t('help.faq') }}</h3>
           
@@ -57,7 +56,6 @@
           </div>
         </div>
         
-        <!-- Контакты -->
         <div class="help-section">
           <h3>{{ t('help.contacts') }}</h3>
           
@@ -96,45 +94,66 @@
           </div>
         </div>
         
-        <!-- Документация -->
-<div class="help-section">
-  <h3>{{ t('help.documentation') }}</h3>
-  
-  <div class="docs-list">
-    <a href="#" class="doc-link" @click.prevent>
-      <span>📘</span>
-      <span>{{ t('help.userGuide') }}</span>
-    </a>
-    <a href="#" class="doc-link" @click.prevent>
-      <span>📗</span>
-      <span>{{ t('help.testingInstructions') }}</span>
-    </a>
-    <a href="#" class="doc-link" @click.prevent>
-      <span>📙</span>
-      <span>{{ t('help.apiDocumentation') }}</span>
-    </a>
-    <a href="#" class="doc-link" @click.prevent>
-      <span>📕</span>
-      <span>{{ t('help.faqPdf') }}</span>
-    </a>
-  </div>
-</div>
+        <div class="help-section">
+          <h3>{{ t('help.documentation') }}</h3>
+          
+          <div class="docs-list">
+            <a href="#" class="doc-link" @click.prevent>
+              <span>📘</span>
+              <span>{{ t('help.userGuide') }}</span>
+            </a>
+            <a href="#" class="doc-link" @click.prevent>
+              <span>📗</span>
+              <span>{{ t('help.testingInstructions') }}</span>
+            </a>
+            <a href="#" class="doc-link" @click.prevent>
+              <span>📙</span>
+              <span>{{ t('help.apiDocumentation') }}</span>
+            </a>
+            <a href="#" class="doc-link" @click.prevent>
+              <span>📕</span>
+              <span>{{ t('help.faqPdf') }}</span>
+            </a>
+          </div>
+        </div>
         
-        <!-- Форма обратной связи -->
         <div class="help-section">
           <h3>{{ t('help.support') }}</h3>
           
           <form class="support-form" @submit.prevent="sendSupport">
-            <div class="form-group">
-              <input type="text" :placeholder="locale === 'ru' ? 'Ваше имя' : 'Your name'" v-model="supportForm.name" />
+            <div class="form-group" :class="{ 'has-error': errors.name }">
+              <input 
+                type="text" 
+                :placeholder="t('support.yourName')" 
+                v-model="supportForm.name"
+                @input="errors.name = ''"
+              />
+              <span class="error-message" v-if="errors.name">{{ errors.name }}</span>
             </div>
-            <div class="form-group">
-              <input type="email" placeholder="Email" v-model="supportForm.email" />
+            
+            <div class="form-group" :class="{ 'has-error': errors.email }">
+              <input 
+                type="email" 
+                placeholder="Email" 
+                v-model="supportForm.email"
+                @input="errors.email = ''"
+              />
+              <span class="error-message" v-if="errors.email">{{ errors.email }}</span>
             </div>
-            <div class="form-group">
-              <textarea :placeholder="locale === 'ru' ? 'Опишите проблему' : 'Describe the problem'" v-model="supportForm.message" rows="4"></textarea>
+            
+            <div class="form-group" :class="{ 'has-error': errors.message }">
+              <textarea 
+                :placeholder="t('support.describeProblem')" 
+                v-model="supportForm.message" 
+                rows="4"
+                @input="errors.message = ''"
+              ></textarea>
+              <span class="error-message" v-if="errors.message">{{ errors.message }}</span>
             </div>
-            <button type="submit" class="btn btn-primary">{{ locale === 'ru' ? 'Отправить' : 'Send' }}</button>
+            
+            <button type="submit" class="btn btn-primary" :disabled="isSending">
+              {{ isSending ? t('support.sending') : t('support.send') }}
+            </button>
           </form>
         </div>
       </div>
@@ -143,7 +162,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useNotifications } from '~/composables/useNotifications'
 
@@ -151,8 +170,15 @@ const { t, locale } = useI18n()
 const { addNotification } = useNotifications()
 
 const openFaq = ref(null)
+const isSending = ref(false)
 
 const supportForm = ref({
+  name: '',
+  email: '',
+  message: ''
+})
+
+const errors = reactive({
   name: '',
   email: '',
   message: ''
@@ -162,22 +188,59 @@ const toggleFaq = (id) => {
   openFaq.value = openFaq.value === id ? null : id
 }
 
+const validateForm = () => {
+  errors.name = ''
+  errors.email = ''
+  errors.message = ''
+  
+  if (!supportForm.value.name || supportForm.value.name.trim().length < 2) {
+    errors.name = t('validation.supportNameMinLength')
+    return false
+  }
+  
+  if (!supportForm.value.email || supportForm.value.email.trim().length === 0) {
+    errors.email = t('validation.emailRequired')
+    return false
+  }
+  
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(supportForm.value.email)) {
+    errors.email = t('validation.emailInvalid')
+    return false
+  }
+  
+  if (!supportForm.value.message || supportForm.value.message.trim().length < 10) {
+    errors.message = t('validation.supportMessageMinLength')
+    return false
+  }
+  
+  return true
+}
+
 const sendSupport = () => {
-  console.log('Support form:', supportForm.value)
-  const message = locale.value === 'ru' ? 'Сообщение отправлено в поддержку' : 'Message sent to support'
-  addNotification(message, 'success')
-  supportForm.value = { name: '', email: '', message: '' }
+  if (!validateForm()) {
+    return
+  }
+  
+  isSending.value = true
+  
+  setTimeout(() => {
+    console.log('Support form:', supportForm.value)
+    addNotification(t('support.messageSent'), 'success')
+    supportForm.value = { name: '', email: '', message: '' }
+    isSending.value = false
+  }, 500)
 }
 
 useHead({
-  title: locale.value === 'ru' ? 'Помощь - MedSkills' : 'Help - MedSkills'
+  title: t('help.title') + ' - MedSkills'
 })
 </script>
 
 <style scoped>
 .help-page {
   min-height: 100vh;
-  background: #f0f4f8;
+  background: var(--bg-primary);
   padding: 20px;
 }
 
@@ -193,13 +256,13 @@ useHead({
 .section-header h2 {
   font-size: 32px;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--text-primary);
   margin-bottom: 8px;
 }
 
 .subtitle {
   font-size: 16px;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .help-content {
@@ -209,16 +272,17 @@ useHead({
 }
 
 .help-section {
-  background: white;
+  background: var(--bg-secondary);
   border-radius: 20px;
   padding: 24px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--card-shadow);
+  border: var(--border-width) solid var(--border-color);
 }
 
 .help-section h3 {
   font-size: 20px;
-  font-weight: 600;
-  color: #1e293b;
+  font-weight: 700;
+  color: var(--text-primary);
   margin-bottom: 20px;
 }
 
@@ -229,7 +293,7 @@ useHead({
 }
 
 .faq-item {
-  border: 1px solid #e2e8f0;
+  border: var(--border-width) solid var(--border-color);
   border-radius: 12px;
   overflow: hidden;
 }
@@ -239,15 +303,15 @@ useHead({
   justify-content: space-between;
   align-items: center;
   padding: 16px 20px;
-  background: #f8fafc;
+  background: var(--bg-hover);
   cursor: pointer;
-  font-weight: 500;
-  color: #1e293b;
+  font-weight: 600;
+  color: var(--text-primary);
   transition: background 0.2s;
 }
 
 .faq-question:hover {
-  background: #f1f5f9;
+  background: var(--bg-secondary);
 }
 
 .faq-icon {
@@ -257,10 +321,10 @@ useHead({
 
 .faq-answer {
   padding: 16px 20px;
-  background: white;
-  color: #475569;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
   line-height: 1.6;
-  border-top: 1px solid #e2e8f0;
+  border-top: var(--border-width) solid var(--border-color);
 }
 
 .contacts-grid {
@@ -273,32 +337,34 @@ useHead({
   display: flex;
   gap: 16px;
   padding: 16px;
-  background: #f8fafc;
+  background: var(--bg-hover);
   border-radius: 12px;
+  border: var(--border-width) solid var(--border-color);
 }
 
 .contact-icon {
   font-size: 28px;
   width: 50px;
   height: 50px;
-  background: white;
+  background: var(--bg-secondary);
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
+  border: var(--border-width) solid var(--border-color);
 }
 
 .contact-info h4 {
   font-size: 14px;
   font-weight: 600;
-  color: #64748b;
+  color: var(--text-tertiary);
   margin-bottom: 4px;
 }
 
 .contact-info p {
   font-size: 16px;
-  color: #1e293b;
-  font-weight: 500;
+  color: var(--text-primary);
+  font-weight: 600;
 }
 
 .docs-list {
@@ -312,16 +378,17 @@ useHead({
   align-items: center;
   gap: 12px;
   padding: 16px 20px;
-  background: #f8fafc;
+  background: var(--bg-hover);
   border-radius: 12px;
   text-decoration: none;
-  color: #1e293b;
-  font-weight: 500;
+  color: var(--text-primary);
+  font-weight: 600;
   transition: all 0.2s;
+  border: var(--border-width) solid var(--border-color);
 }
 
 .doc-link:hover {
-  background: #eff6ff;
+  background: var(--bg-unread);
   color: #3b82f6;
   transform: translateX(4px);
 }
@@ -332,11 +399,17 @@ useHead({
   gap: 16px;
 }
 
+.form-group {
+  margin-bottom: 4px;
+}
+
 .form-group input,
 .form-group textarea {
   width: 100%;
   padding: 14px 16px;
-  border: 1px solid #e2e8f0;
+  background: var(--bg-input);
+  color: var(--text-primary);
+  border: var(--border-width) solid var(--border-color);
   border-radius: 12px;
   font-size: 15px;
   font-family: inherit;
@@ -349,11 +422,24 @@ useHead({
   border-color: #3b82f6;
 }
 
+.form-group.has-error input,
+.form-group.has-error textarea {
+  border-color: #ef4444;
+}
+
+.error-message {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+  color: #ef4444;
+  font-weight: 500;
+}
+
 .btn {
   padding: 14px 24px;
   border-radius: 12px;
   font-size: 15px;
-  font-weight: 500;
+  font-weight: 600;
   border: none;
   cursor: pointer;
   transition: all 0.2s;
@@ -362,10 +448,17 @@ useHead({
 .btn-primary {
   background: #3b82f6;
   color: white;
+  border: var(--border-width) solid #3b82f6;
 }
 
 .btn-primary:hover {
   background: #2563eb;
+  border-color: #2563eb;
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 @media (max-width: 768px) {

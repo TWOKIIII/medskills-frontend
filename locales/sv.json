@@ -338,5 +338,26 @@
       "q5": "Vilket tillskott har bevisad effekt på återhämtning efter träning?",
       "q5_options": ["Kreatin", "BCAA", "Beta-alanin", "Alla ovanstående"]
     }
+  },
+  "validation": {
+    "nameMinLength": "Namnet måste innehålla minst 3 tecken",
+    "nameRequiresSurname": "Ange för- och efternamn",
+    "emailRequired": "E-post krävs",
+    "emailInvalid": "Ange en giltig e-postadress",
+    "phoneRequired": "Telefon krävs",
+    "phoneInvalid": "Ange ett giltigt telefonnummer",
+    "specializationRequired": "Specialisering krävs",
+    "saveError": "Fel vid sparande av profil",
+    "languageChangeError": "Fel vid språkbyte",
+    "supportNameMinLength": "Namnet måste innehålla minst 2 tecken",
+    "supportMessageMinLength": "Meddelandet måste innehålla minst 10 tecken",
+    "logoutConfirm": "Är du säker på att du vill logga ut?"
+  },
+  "support": {
+    "yourName": "Ditt namn",
+    "describeProblem": "Beskriv problemet",
+    "send": "Skicka",
+    "sending": "Skickar...",
+    "messageSent": "Meddelande skickat till supporten"
   }
 }

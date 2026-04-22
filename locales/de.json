@@ -338,5 +338,26 @@
       "q5": "Welches Supplement beschleunigt nachweislich die Erholung nach dem Training?",
       "q5_options": ["Kreatin", "BCAA", "Beta-Alanin", "Alle genannten"]
     }
+  },
+  "validation": {
+    "nameMinLength": "Name muss mindestens 3 Zeichen enthalten",
+    "nameRequiresSurname": "Vor- und Nachname eingeben",
+    "emailRequired": "E-Mail ist erforderlich",
+    "emailInvalid": "Gültige E-Mail-Adresse eingeben",
+    "phoneRequired": "Telefon ist erforderlich",
+    "phoneInvalid": "Gültige Telefonnummer eingeben",
+    "specializationRequired": "Spezialisierung ist erforderlich",
+    "saveError": "Fehler beim Speichern des Profils",
+    "languageChangeError": "Fehler beim Sprachwechsel",
+    "supportNameMinLength": "Name muss mindestens 2 Zeichen enthalten",
+    "supportMessageMinLength": "Nachricht muss mindestens 10 Zeichen enthalten",
+    "logoutConfirm": "Möchten Sie sich wirklich abmelden?"
+  },
+  "support": {
+    "yourName": "Ihr Name",
+    "describeProblem": "Problem beschreiben",
+    "send": "Senden",
+    "sending": "Wird gesendet...",
+    "messageSent": "Nachricht an Support gesendet"
   }
 }

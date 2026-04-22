@@ -42,33 +42,38 @@
       </div>
     </div>
     
-    <!-- Модальное окно -->
     <div class="modal" v-if="showEditModal" @click="closeEditModal">
       <div class="modal-content" @click.stop>
         <h3>{{ t('profile.edit') }}</h3>
         
-        <div class="form-group">
+        <div class="form-group" :class="{ 'has-error': errors.name }">
           <label>{{ t('profile.name') }}</label>
-          <input type="text" v-model="editForm.name" />
+          <input type="text" v-model="editForm.name" @input="clearError('name')" />
+          <span class="error-message" v-if="errors.name">{{ errors.name }}</span>
         </div>
         
-        <div class="form-group">
+        <div class="form-group" :class="{ 'has-error': errors.email }">
           <label>{{ t('profile.email') }}</label>
-          <input type="email" v-model="editForm.email" />
+          <input type="email" v-model="editForm.email" @input="clearError('email')" />
+          <span class="error-message" v-if="errors.email">{{ errors.email }}</span>
         </div>
         
-        <div class="form-group">
+        <div class="form-group" :class="{ 'has-error': errors.phone }">
           <label>{{ t('profile.phone') }}</label>
-          <input type="tel" v-model="editForm.phone" />
+          <input type="tel" v-model="editForm.phone" @input="clearError('phone')" />
+          <span class="error-message" v-if="errors.phone">{{ errors.phone }}</span>
         </div>
         
-        <div class="form-group">
+        <div class="form-group" :class="{ 'has-error': errors.specialization }">
           <label>{{ t('profile.specialization') }}</label>
-          <input type="text" v-model="editForm.specialization" />
+          <input type="text" v-model="editForm.specialization" @input="clearError('specialization')" />
+          <span class="error-message" v-if="errors.specialization">{{ errors.specialization }}</span>
         </div>
         
         <div class="modal-actions">
-          <button class="btn btn-primary" @click="saveProfile">{{ t('profile.save') }}</button>
+          <button class="btn btn-primary" @click="saveProfile" :disabled="isSaving">
+            {{ isSaving ? '...' : t('profile.save') }}
+          </button>
           <button class="btn btn-secondary" @click="closeEditModal">{{ t('profile.cancel') }}</button>
         </div>
       </div>
@@ -77,7 +82,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useProfile } from '~/composables/useProfile'
@@ -85,16 +90,60 @@ import { useNotifications } from '~/composables/useNotifications'
 
 const router = useRouter()
 const { t } = useI18n()
-const { profile, loadProfile, saveProfile: updateProfile } = useProfile()
+const { profile, saveProfile: updateProfile, validateName, validateEmail, validatePhone } = useProfile()
 const { addNotification } = useNotifications()
 
 const showEditModal = ref(false)
+const isSaving = ref(false)
 const editForm = ref({
   name: '',
   email: '',
   phone: '',
   specialization: ''
 })
+
+const errors = reactive({
+  name: '',
+  email: '',
+  phone: '',
+  specialization: ''
+})
+
+const clearError = (field) => {
+  errors[field] = ''
+}
+
+const validateForm = () => {
+  errors.name = ''
+  errors.email = ''
+  errors.phone = ''
+  errors.specialization = ''
+  
+  const nameValidation = validateName(editForm.value.name)
+  if (!nameValidation.valid) {
+    errors.name = t(nameValidation.error === 'Имя должно содержать минимум 3 символа' ? 'validation.nameMinLength' : 'validation.nameRequiresSurname')
+    return false
+  }
+  
+  const emailValidation = validateEmail(editForm.value.email)
+  if (!emailValidation.valid) {
+    errors.email = t(emailValidation.error === 'Email обязателен для заполнения' ? 'validation.emailRequired' : 'validation.emailInvalid')
+    return false
+  }
+  
+  const phoneValidation = validatePhone(editForm.value.phone)
+  if (!phoneValidation.valid) {
+    errors.phone = t(phoneValidation.error === 'Телефон обязателен для заполнения' ? 'validation.phoneRequired' : 'validation.phoneInvalid')
+    return false
+  }
+  
+  if (!editForm.value.specialization || editForm.value.specialization.trim().length === 0) {
+    errors.specialization = t('validation.specializationRequired')
+    return false
+  }
+  
+  return true
+}
 
 const openEditModal = () => {
   editForm.value = {
@@ -103,37 +152,58 @@ const openEditModal = () => {
     phone: profile.value.phone,
     specialization: profile.value.specialization
   }
+  errors.name = ''
+  errors.email = ''
+  errors.phone = ''
+  errors.specialization = ''
   showEditModal.value = true
 }
 
 const closeEditModal = () => {
   showEditModal.value = false
+  isSaving.value = false
 }
 
-const saveProfile = () => {
-  updateProfile(editForm.value)
-  closeEditModal()
-  addNotification(t('notifications.profileUpdated'), 'success')
+const saveProfile = async () => {
+  if (!validateForm()) {
+    return
+  }
+  
+  isSaving.value = true
+  
+  const result = updateProfile(editForm.value)
+  
+  if (result.success) {
+    closeEditModal()
+    addNotification(t('notifications.profileUpdated'), 'success')
+  } else {
+    addNotification(t('validation.saveError'), 'error')
+  }
+  
+  isSaving.value = false
 }
 
 const logout = () => {
-  console.log('Выход')
+  if (confirm(t('validation.logoutConfirm'))) {
+    console.log('Выход')
+  }
 }
 
 onMounted(() => {
-  loadProfile()
+  if (profile.value) {
+    profile.value = { ...profile.value }
+  }
 })
 
 useHead({
-  title: 'Профиль - MedSkills'
+  title: t('profile.title') + ' - MedSkills'
 })
 </script>
 
 <style scoped>
-/* Стили без изменений */
 .profile-page {
   min-height: 100vh;
-  background: #f0f4f8;
+  background: var(--bg-primary);
   padding: 20px;
 }
 
@@ -143,17 +213,18 @@ useHead({
 }
 
 .profile-card {
-  background: white;
+  background: var(--bg-secondary);
   border-radius: 24px;
   padding: 32px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--card-shadow);
+  border: var(--border-width) solid var(--border-color);
 }
 
 .profile-header {
   text-align: center;
   margin-bottom: 32px;
   padding-bottom: 24px;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: var(--border-width) solid var(--border-color);
 }
 
 .avatar-large {
@@ -164,13 +235,13 @@ useHead({
 .profile-header h2 {
   font-size: 28px;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--text-primary);
   margin-bottom: 8px;
 }
 
 .specialization {
   font-size: 16px;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .profile-info {
@@ -180,7 +251,7 @@ useHead({
 .info-section h3 {
   font-size: 18px;
   font-weight: 600;
-  color: #1e293b;
+  color: var(--text-primary);
   margin-bottom: 16px;
 }
 
@@ -198,12 +269,12 @@ useHead({
 
 .info-item .label {
   font-size: 13px;
-  color: #64748b;
+  color: var(--text-tertiary);
 }
 
 .info-item .value {
   font-size: 16px;
-  color: #1e293b;
+  color: var(--text-primary);
   font-weight: 500;
 }
 
@@ -211,14 +282,14 @@ useHead({
   display: flex;
   gap: 16px;
   padding-top: 24px;
-  border-top: 1px solid #e2e8f0;
+  border-top: var(--border-width) solid var(--border-color);
 }
 
 .btn {
   padding: 12px 24px;
   border-radius: 12px;
   font-size: 15px;
-  font-weight: 500;
+  font-weight: 600;
   border: none;
   cursor: pointer;
   transition: all 0.2s;
@@ -227,19 +298,27 @@ useHead({
 .btn-primary {
   background: #3b82f6;
   color: white;
+  border: var(--border-width) solid #3b82f6;
 }
 
 .btn-primary:hover {
   background: #2563eb;
+  border-color: #2563eb;
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .btn-secondary {
-  background: #f1f5f9;
-  color: #64748b;
+  background: var(--btn-secondary-bg);
+  color: var(--btn-secondary-text);
+  border: var(--border-width) solid var(--border-color);
 }
 
 .btn-secondary:hover {
-  background: #e2e8f0;
+  background: var(--btn-secondary-hover);
 }
 
 .modal {
@@ -248,7 +327,7 @@ useHead({
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -256,19 +335,20 @@ useHead({
 }
 
 .modal-content {
-  background: white;
+  background: var(--bg-secondary);
   border-radius: 20px;
   padding: 32px;
   max-width: 500px;
   width: 90%;
   max-height: 90vh;
   overflow-y: auto;
+  border: var(--border-width) solid var(--border-color);
 }
 
 .modal-content h3 {
   font-size: 24px;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--text-primary);
   margin-bottom: 24px;
 }
 
@@ -279,15 +359,17 @@ useHead({
 .form-group label {
   display: block;
   font-size: 14px;
-  font-weight: 500;
-  color: #64748b;
+  font-weight: 600;
+  color: var(--text-secondary);
   margin-bottom: 8px;
 }
 
 .form-group input {
   width: 100%;
   padding: 12px;
-  border: 1px solid #e2e8f0;
+  background: var(--bg-input);
+  color: var(--text-primary);
+  border: var(--border-width) solid var(--border-color);
   border-radius: 8px;
   font-size: 15px;
   transition: border-color 0.2s;
@@ -296,6 +378,18 @@ useHead({
 .form-group input:focus {
   outline: none;
   border-color: #3b82f6;
+}
+
+.form-group.has-error input {
+  border-color: #ef4444;
+}
+
+.error-message {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+  color: #ef4444;
+  font-weight: 500;
 }
 
 .modal-actions {

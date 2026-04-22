@@ -4,15 +4,12 @@ const defaultTests = [
   { id: 1, category: 'traumatology', categoryKey: 'tests.traumatology', titleKey: 'tests.traumatologyBasic', descriptionKey: 'tests.traumatologyBasicDesc', status: 'new', progress: null, score: null, completedDate: null, currentQuestion: 0, answers: [] },
   { id: 2, category: 'traumatology', categoryKey: 'tests.traumatology', titleKey: 'tests.traumatologyJoints', descriptionKey: 'tests.traumatologyJointsDesc', status: 'new', progress: null, score: null, completedDate: null, currentQuestion: 0, answers: [] },
   { id: 3, category: 'traumatology', categoryKey: 'tests.traumatology', titleKey: 'tests.traumatologySpine', descriptionKey: 'tests.traumatologySpineDesc', status: 'new', progress: null, score: null, completedDate: null, currentQuestion: 0, answers: [] },
-  
   { id: 4, category: 'cardiology', categoryKey: 'tests.cardiology', titleKey: 'tests.cardiologyBasic', descriptionKey: 'tests.cardiologyBasicDesc', status: 'new', progress: null, score: null, completedDate: null, currentQuestion: 0, answers: [] },
   { id: 5, category: 'cardiology', categoryKey: 'tests.cardiology', titleKey: 'tests.cardiologyECG', descriptionKey: 'tests.cardiologyECGDesc', status: 'new', progress: null, score: null, completedDate: null, currentQuestion: 0, answers: [] },
   { id: 6, category: 'cardiology', categoryKey: 'tests.cardiology', titleKey: 'tests.cardiologyStress', descriptionKey: 'tests.cardiologyStressDesc', status: 'new', progress: null, score: null, completedDate: null, currentQuestion: 0, answers: [] },
-
   { id: 7, category: 'rehabilitation', categoryKey: 'tests.rehabilitation', titleKey: 'tests.rehabilitationBasic', descriptionKey: 'tests.rehabilitationBasicDesc', status: 'new', progress: null, score: null, completedDate: null, currentQuestion: 0, answers: [] },
   { id: 8, category: 'rehabilitation', categoryKey: 'tests.rehabilitation', titleKey: 'tests.rehabilitationPostOp', descriptionKey: 'tests.rehabilitationPostOpDesc', status: 'new', progress: null, score: null, completedDate: null, currentQuestion: 0, answers: [] },
   { id: 9, category: 'rehabilitation', categoryKey: 'tests.rehabilitation', titleKey: 'tests.rehabilitationSports', descriptionKey: 'tests.rehabilitationSportsDesc', status: 'new', progress: null, score: null, completedDate: null, currentQuestion: 0, answers: [] },
-  
   { id: 10, category: 'nutrition', categoryKey: 'tests.nutrition', titleKey: 'tests.nutritionBasic', descriptionKey: 'tests.nutritionBasicDesc', status: 'new', progress: null, score: null, completedDate: null, currentQuestion: 0, answers: [] },
   { id: 11, category: 'nutrition', categoryKey: 'tests.nutrition', titleKey: 'tests.nutritionCompetition', descriptionKey: 'tests.nutritionCompetitionDesc', status: 'new', progress: null, score: null, completedDate: null, currentQuestion: 0, answers: [] },
   { id: 12, category: 'nutrition', categoryKey: 'tests.nutrition', titleKey: 'tests.nutritionRecovery', descriptionKey: 'tests.nutritionRecoveryDesc', status: 'new', progress: null, score: null, completedDate: null, currentQuestion: 0, answers: [] }
@@ -26,7 +23,12 @@ export const useTests = () => {
       const saved = localStorage.getItem('medskills_tests')
       if (saved) {
         try {
-          tests.value = JSON.parse(saved)
+          const parsed = JSON.parse(saved)
+          if (Array.isArray(parsed) && parsed.length === defaultTests.length) {
+            tests.value = parsed
+          } else {
+            tests.value = JSON.parse(JSON.stringify(defaultTests))
+          }
         } catch (e) {
           tests.value = JSON.parse(JSON.stringify(defaultTests))
         }
@@ -43,13 +45,16 @@ export const useTests = () => {
   }
 
   const getTest = (id) => {
-    return tests.value.find(t => t.id === id)
+    if (!id || typeof id !== 'number') return null
+    return tests.value.find(t => t.id === id) || null
   }
 
   const completeTest = (testId, score, totalQuestions) => {
+    if (!testId || score === undefined || !totalQuestions || totalQuestions <= 0) return false
+    
     const test = tests.value.find(t => t.id === testId)
     if (test) {
-      const percentage = Math.round((score / totalQuestions) * 100)
+      const percentage = Math.min(100, Math.max(0, Math.round((score / totalQuestions) * 100)))
       test.status = 'completed'
       test.progress = 100
       test.score = percentage
@@ -57,10 +62,14 @@ export const useTests = () => {
       test.currentQuestion = 0
       test.answers = []
       saveTests()
+      return true
     }
+    return false
   }
 
   const startTest = (testId) => {
+    if (!testId) return false
+    
     const test = tests.value.find(t => t.id === testId)
     if (test && test.status === 'new') {
       test.status = 'continue'
@@ -68,20 +77,28 @@ export const useTests = () => {
       test.currentQuestion = 0
       test.answers = []
       saveTests()
+      return true
     }
+    return false
   }
 
   const saveProgress = (testId, currentQuestion, answers, totalQuestions) => {
+    if (!testId || !Array.isArray(answers) || !totalQuestions || totalQuestions <= 0) return false
+    
     const test = tests.value.find(t => t.id === testId)
     if (test && test.status === 'continue') {
-      test.currentQuestion = currentQuestion
+      test.currentQuestion = Math.min(currentQuestion, totalQuestions - 1)
       test.answers = [...answers]
-      test.progress = Math.round((currentQuestion / totalQuestions) * 100)
+      test.progress = Math.min(100, Math.round((currentQuestion / totalQuestions) * 100))
       saveTests()
+      return true
     }
+    return false
   }
 
   const resetTest = (testId) => {
+    if (!testId) return false
+    
     const test = tests.value.find(t => t.id === testId)
     if (test) {
       test.status = 'new'
@@ -91,7 +108,9 @@ export const useTests = () => {
       test.currentQuestion = 0
       test.answers = []
       saveTests()
+      return true
     }
+    return false
   }
 
   const resetAllTests = () => {

@@ -338,5 +338,26 @@
       "q5": "Which supplement is proven to accelerate post-workout recovery?",
       "q5_options": ["Creatine", "BCAA", "Beta-alanine", "All of the above"]
     }
+  },
+  "validation": {
+    "nameMinLength": "Name must contain at least 3 characters",
+    "nameRequiresSurname": "Enter first and last name",
+    "emailRequired": "Email is required",
+    "emailInvalid": "Enter a valid email address",
+    "phoneRequired": "Phone is required",
+    "phoneInvalid": "Enter a valid phone number",
+    "specializationRequired": "Specialization is required",
+    "saveError": "Error saving profile",
+    "languageChangeError": "Error changing language",
+    "supportNameMinLength": "Name must contain at least 2 characters",
+    "supportMessageMinLength": "Message must contain at least 10 characters",
+    "logoutConfirm": "Are you sure you want to logout?"
+  },
+  "support": {
+    "yourName": "Your name",
+    "describeProblem": "Describe the problem",
+    "send": "Send",
+    "sending": "Sending...",
+    "messageSent": "Message sent to support"
   }
 }

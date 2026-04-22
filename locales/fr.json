@@ -338,5 +338,26 @@
       "q5": "Quel supplément accélère prouvé la récupération après l'entraînement ?",
       "q5_options": ["Créatine", "BCAA", "Bêta-alanine", "Tous les suppléments cités"]
     }
+  },
+  "validation": {
+    "nameMinLength": "Le nom doit contenir au moins 3 caractères",
+    "nameRequiresSurname": "Entrez le prénom et le nom",
+    "emailRequired": "L'email est requis",
+    "emailInvalid": "Entrez une adresse email valide",
+    "phoneRequired": "Le téléphone est requis",
+    "phoneInvalid": "Entrez un numéro de téléphone valide",
+    "specializationRequired": "La spécialisation est requise",
+    "saveError": "Erreur lors de l'enregistrement du profil",
+    "languageChangeError": "Erreur lors du changement de langue",
+    "supportNameMinLength": "Le nom doit contenir au moins 2 caractères",
+    "supportMessageMinLength": "Le message doit contenir au moins 10 caractères",
+    "logoutConfirm": "Êtes-vous sûr de vouloir vous déconnecter ?"
+  },
+  "support": {
+    "yourName": "Votre nom",
+    "describeProblem": "Décrire le problème",
+    "send": "Envoyer",
+    "sending": "Envoi en cours...",
+    "messageSent": "Message envoyé au support"
   }
 }

@@ -338,5 +338,26 @@
       "q5": "Жаттығудан кейін қалпына келуді қандай қоспа дәлелді түрде тездетеді?",
       "q5_options": ["Креатин", "BCAA", "Бета-аланин", "Барлығы"]
     }
+  },
+  "validation": {
+    "nameMinLength": "Аты кемінде 3 таңбадан тұруы керек",
+    "nameRequiresSurname": "Тегі мен атын енгізіңіз",
+    "emailRequired": "Email міндетті",
+    "emailInvalid": "Дұрыс email мекенжайын енгізіңіз",
+    "phoneRequired": "Телефон міндетті",
+    "phoneInvalid": "Дұрыс телефон нөмірін енгізіңіз",
+    "specializationRequired": "Мамандық міндетті",
+    "saveError": "Профильді сақтау қатесі",
+    "languageChangeError": "Тілді өзгерту қатесі",
+    "supportNameMinLength": "Аты кемінде 2 таңбадан тұруы керек",
+    "supportMessageMinLength": "Хабарлама кемінде 10 таңбадан тұруы керек",
+    "logoutConfirm": "Шыққыңыз келетініне сенімдісіз бе?"
+  },
+  "support": {
+    "yourName": "Сіздің атыңыз",
+    "describeProblem": "Мәселені сипаттаңыз",
+    "send": "Жіберу",
+    "sending": "Жіберілуде...",
+    "messageSent": "Хабарлама қолдау қызметіне жіберілді"
   }
 }

@@ -338,5 +338,26 @@
       "q5": "Który suplement ma udowodnione działanie przyspieszające regenerację potreningową?",
       "q5_options": ["Kreatyna", "BCAA", "Beta-alanina", "Wszystkie wymienione"]
     }
+  },
+  "validation": {
+    "nameMinLength": "Imię musi zawierać co najmniej 3 znaki",
+    "nameRequiresSurname": "Wprowadź imię i nazwisko",
+    "emailRequired": "Email jest wymagany",
+    "emailInvalid": "Wprowadź poprawny adres email",
+    "phoneRequired": "Telefon jest wymagany",
+    "phoneInvalid": "Wprowadź poprawny numer telefonu",
+    "specializationRequired": "Specjalizacja jest wymagana",
+    "saveError": "Błąd podczas zapisywania profilu",
+    "languageChangeError": "Błąd podczas zmiany języka",
+    "supportNameMinLength": "Imię musi zawierać co najmniej 2 znaki",
+    "supportMessageMinLength": "Wiadomość musi zawierać co najmniej 10 znaków",
+    "logoutConfirm": "Czy na pewno chcesz się wylogować?"
+  },
+  "support": {
+    "yourName": "Twoje imię",
+    "describeProblem": "Opisz problem",
+    "send": "Wyślij",
+    "sending": "Wysyłanie...",
+    "messageSent": "Wiadomość wysłana do pomocy technicznej"
   }
 }

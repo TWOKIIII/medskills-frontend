@@ -1,4 +1,3 @@
-// composables/useSettings.js
 import { ref } from 'vue'
 
 const defaultSettings = {
@@ -8,7 +7,6 @@ const defaultSettings = {
 }
 
 const settings = ref({ ...defaultSettings })
-
 let initialized = false
 
 export const useSettings = () => {
@@ -42,16 +40,24 @@ export const useSettings = () => {
   }
   
   const setLocale = (locale) => {
+    if (!locale || locale.trim().length === 0) {
+      return false
+    }
     settings.value.locale = locale
     saveSettings()
     if (process.client) {
       localStorage.setItem('locale', locale)
     }
+    return true
   }
   
   const setTheme = (theme) => {
+    if (theme !== 'light' && theme !== 'dark') {
+      return false
+    }
     settings.value.theme = theme
     saveSettings()
+    return true
   }
 
   const resetSettings = () => {
