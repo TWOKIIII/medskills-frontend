@@ -1,8 +1,8 @@
+// components/AppHeader.vue
 <template>
   <header class="app-header">
     <h1 class="logo" @click="goToHome">MedSkills</h1>
     <div class="header-actions">
-      <!-- Тёмная/светлая тема -->
       <button class="icon-btn theme-btn" @click="handleToggleTheme">
         <svg v-if="isDark" width="24" height="24" viewBox="0 0 24 24" fill="none">
           <path d="M12 2C6.477 2 2 6.477 2 12C2 17.523 6.477 22 12 22C17.523 22 22 17.523 22 12C22 6.477 17.523 2 12 2ZM12 20V4C16.418 4 20 7.582 20 12C20 16.418 16.418 20 12 20Z" fill="currentColor"/>
@@ -13,7 +13,6 @@
         </svg>
       </button>
       
-      <!-- Колокольчик с уведомлениями -->
       <div class="notification-wrapper">
         <button class="icon-btn" @click="showNotifications = !showNotifications">
           <div class="notification-badge" v-if="unreadCount > 0">{{ unreadCount }}</div>
@@ -45,7 +44,6 @@
         </div>
       </div>
       
-      <!-- Смена языка -->
       <div class="language-wrapper">
         <button class="icon-btn language-btn" @click="showLanguages = !showLanguages">
           <span :class="currentLanguage.flagClass"></span>
@@ -65,7 +63,6 @@
         </div>
       </div>
       
-      <!-- Кликабельный пользователь -->
       <div class="user-info" @click="goToProfile">
         <div class="avatar">👨‍⚕️</div>
         <span class="user-name">{{ profile.shortName }}</span>
@@ -87,7 +84,7 @@ import { useTheme } from '~/composables/useTheme'
 const router = useRouter()
 const { t, locale } = useI18n()
 const { notifications, markAsRead, clearAll, unreadCount, addNotification } = useNotifications()
-const { currentLocale, languages, setLocale, loadLocale, getLanguageName } = useLanguage()
+const { currentLocale, languages, setLocale, loadLocale, getLanguageName, getLanguageChangedMessage } = useLanguage()
 const { profile, loadProfile } = useProfile()
 const { settings } = useSettings()
 const { isDark, initTheme, toggleTheme } = useTheme()
@@ -105,47 +102,17 @@ const formatTime = (timestamp) => {
   const diff = now - date
   
   if (diff < 60000) {
-    const translations = {
-      ru: 'только что',
-      en: 'just now',
-      de: 'gerade eben',
-      fr: "à l'instant",
-      be: 'толькі што',
-      kk: 'жаңа ғана',
-      pl: 'przed chwilą',
-      sv: 'nyss'
-    }
-    return translations[locale.value] || translations.en
+    return t('notifications.justNow')
   }
   
   if (diff < 3600000) {
     const minutes = Math.floor(diff / 60000)
-    const translations = {
-      ru: `${minutes} мин назад`,
-      en: `${minutes} min ago`,
-      de: `vor ${minutes} Min`,
-      fr: `il y a ${minutes} min`,
-      be: `${minutes} хв таму`,
-      kk: `${minutes} мин бұрын`,
-      pl: `${minutes} min temu`,
-      sv: `för ${minutes} min sedan`
-    }
-    return translations[locale.value] || translations.en
+    return t('notifications.minutesAgo', { minutes })
   }
   
   if (diff < 86400000) {
     const hours = Math.floor(diff / 3600000)
-    const translations = {
-      ru: `${hours} ч назад`,
-      en: `${hours} h ago`,
-      de: `vor ${hours} Std`,
-      fr: `il y a ${hours} h`,
-      be: `${hours} гадз таму`,
-      kk: `${hours} сағ бұрын`,
-      pl: `${hours} godz temu`,
-      sv: `för ${hours} tim sedan`
-    }
-    return translations[locale.value] || translations.en
+    return t('notifications.hoursAgo', { hours })
   }
   
   return date.toLocaleDateString(locale.value === 'ru' ? 'ru-RU' : 'en-US')
@@ -157,17 +124,7 @@ const changeLanguage = (code) => {
   
   if (settings.value.notifications) {
     const langName = getLanguageName(code)
-    const messages = {
-      ru: `Язык изменён на ${langName}`,
-      en: `Language changed to ${langName}`,
-      de: `Sprache auf ${langName} geändert`,
-      fr: `Langue changée en ${langName}`,
-      be: `Мова зменена на ${langName}`,
-      kk: `Тіл ${langName} тіліне өзгертілді`,
-      pl: `Język zmieniony na ${langName}`,
-      sv: `Språk ändrat till ${langName}`
-    }
-    addNotification(messages[code] || messages.en, 'success')
+    addNotification(getLanguageChangedMessage(code, langName), 'success')
   }
 }
 

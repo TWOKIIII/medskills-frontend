@@ -141,7 +141,7 @@ const handleChangeLanguage = (event) => {
       addNotification(messages[newLocale] || messages.en, 'success')
     }
   } else {
-    addNotification('Ошибка при смене языка', 'error')
+    addNotification(t('validation.languageChangeError'), 'error')
   }
 }
 
@@ -173,7 +173,7 @@ const handleResetData = () => {
 }
 
 useHead({
-  title: 'Настройки - MedSkills'
+  title: t('settings.title') + ' - MedSkills'
 })
 </script>
 

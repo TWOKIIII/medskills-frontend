@@ -7,8 +7,8 @@
       <div class="profile-card">
         <div class="profile-header">
           <div class="avatar-large">👨‍⚕️</div>
-          <h2>{{ profile.name }}</h2>
-          <p class="specialization">{{ profile.specialization }}</p>
+          <h2>{{ profile.name || t('profile.notSpecified') }}</h2>
+          <p class="specialization">{{ profile.specialization || t('profile.notSpecified') }}</p>
         </div>
         
         <div class="profile-info">
@@ -17,19 +17,19 @@
             <div class="info-grid">
               <div class="info-item">
                 <span class="label">{{ t('profile.email') }}</span>
-                <span class="value">{{ profile.email }}</span>
+                <span class="value">{{ profile.email || t('profile.notSpecified') }}</span>
               </div>
               <div class="info-item">
                 <span class="label">{{ t('profile.phone') }}</span>
-                <span class="value">{{ profile.phone }}</span>
+                <span class="value">{{ profile.phone || t('profile.notSpecified') }}</span>
               </div>
               <div class="info-item">
                 <span class="label">{{ t('profile.birthDate') }}</span>
-                <span class="value">{{ profile.birthDate }}</span>
+                <span class="value">{{ profile.birthDate || t('profile.notSpecified') }}</span>
               </div>
               <div class="info-item">
                 <span class="label">{{ t('profile.experience') }}</span>
-                <span class="value">{{ profile.experience }}</span>
+                <span class="value">{{ profile.experience || t('profile.notSpecified') }}</span>
               </div>
             </div>
           </div>
@@ -37,7 +37,7 @@
         
         <div class="profile-actions">
           <button class="btn btn-primary" @click="openEditModal">{{ t('profile.edit') }}</button>
-          <button class="btn btn-secondary" @click="logout">{{ t('app.logout') }}</button>
+          <button class="btn btn-secondary" @click="handleLogout">{{ t('app.logout') }}</button>
         </div>
       </div>
     </div>
@@ -70,6 +70,16 @@
           <span class="error-message" v-if="errors.specialization">{{ errors.specialization }}</span>
         </div>
         
+        <div class="form-group">
+          <label>{{ t('profile.birthDate') }}</label>
+          <input type="date" v-model="editForm.birthDate" />
+        </div>
+        
+        <div class="form-group">
+          <label>{{ t('profile.experience') }}</label>
+          <input type="text" v-model="editForm.experience" :placeholder="t('profile.experiencePlaceholder')" />
+        </div>
+        
         <div class="modal-actions">
           <button class="btn btn-primary" @click="saveProfile" :disabled="isSaving">
             {{ isSaving ? '...' : t('profile.save') }}
@@ -78,28 +88,50 @@
         </div>
       </div>
     </div>
+    
+    <div class="modal confirm-modal" v-if="showLogoutConfirm" @click="showLogoutConfirm = false">
+      <div class="modal-content" @click.stop>
+        <h3>{{ t('auth.logoutConfirm') }}</h3>
+        <p>{{ t('auth.logoutConfirmDesc') }}</p>
+        <div class="modal-actions">
+          <button class="btn btn-danger" @click="confirmLogout" :disabled="isLoggingOut">
+            {{ isLoggingOut ? '...' : t('app.logout') }}
+          </button>
+          <button class="btn btn-secondary" @click="showLogoutConfirm = false">
+            {{ t('profile.cancel') }}
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, reactive } from 'vue'
+import { ref, onMounted, reactive, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useProfile } from '~/composables/useProfile'
 import { useNotifications } from '~/composables/useNotifications'
+import { useAuth } from '~/composables/useAuth'
 
 const router = useRouter()
 const { t } = useI18n()
-const { profile, saveProfile: updateProfile, validateName, validateEmail, validatePhone } = useProfile()
+const { profile, saveProfile: updateProfile, validateName, validateEmail, validatePhone, loadProfile, syncWithUser } = useProfile()
 const { addNotification } = useNotifications()
+const { logout, user } = useAuth()
 
 const showEditModal = ref(false)
+const showLogoutConfirm = ref(false)
 const isSaving = ref(false)
+const isLoggingOut = ref(false)
+
 const editForm = ref({
   name: '',
   email: '',
   phone: '',
-  specialization: ''
+  specialization: '',
+  birthDate: '',
+  experience: ''
 })
 
 const errors = reactive({
@@ -121,19 +153,19 @@ const validateForm = () => {
   
   const nameValidation = validateName(editForm.value.name)
   if (!nameValidation.valid) {
-    errors.name = t(nameValidation.error === 'Имя должно содержать минимум 3 символа' ? 'validation.nameMinLength' : 'validation.nameRequiresSurname')
+    errors.name = t(nameValidation.error)
     return false
   }
   
   const emailValidation = validateEmail(editForm.value.email)
   if (!emailValidation.valid) {
-    errors.email = t(emailValidation.error === 'Email обязателен для заполнения' ? 'validation.emailRequired' : 'validation.emailInvalid')
+    errors.email = t(emailValidation.error)
     return false
   }
   
   const phoneValidation = validatePhone(editForm.value.phone)
   if (!phoneValidation.valid) {
-    errors.phone = t(phoneValidation.error === 'Телефон обязателен для заполнения' ? 'validation.phoneRequired' : 'validation.phoneInvalid')
+    errors.phone = t(phoneValidation.error)
     return false
   }
   
@@ -147,10 +179,12 @@ const validateForm = () => {
 
 const openEditModal = () => {
   editForm.value = {
-    name: profile.value.name,
-    email: profile.value.email,
-    phone: profile.value.phone,
-    specialization: profile.value.specialization
+    name: profile.value.name || '',
+    email: profile.value.email || '',
+    phone: profile.value.phone || '',
+    specialization: profile.value.specialization || '',
+    birthDate: profile.value.birthDate || '',
+    experience: profile.value.experience || ''
   }
   errors.name = ''
   errors.email = ''
@@ -183,16 +217,32 @@ const saveProfile = async () => {
   isSaving.value = false
 }
 
-const logout = () => {
-  if (confirm(t('validation.logoutConfirm'))) {
-    console.log('Выход')
+const handleLogout = () => {
+  showLogoutConfirm.value = true
+}
+
+const confirmLogout = async () => {
+  isLoggingOut.value = true
+  
+  try {
+    await logout()
+    showLogoutConfirm.value = false
+  } catch (error) {
+    addNotification(t('auth.logoutError'), 'error')
+  } finally {
+    isLoggingOut.value = false
   }
 }
 
-onMounted(() => {
-  if (profile.value) {
-    profile.value = { ...profile.value }
+watch(user, (newUser) => {
+  if (newUser) {
+    syncWithUser()
   }
+}, { immediate: true })
+
+onMounted(() => {
+  loadProfile()
+  syncWithUser()
 })
 
 useHead({
@@ -321,6 +371,22 @@ useHead({
   background: var(--btn-secondary-hover);
 }
 
+.btn-danger {
+  background: #ef4444;
+  color: white;
+  border: var(--border-width) solid #ef4444;
+}
+
+.btn-danger:hover {
+  background: #dc2626;
+  border-color: #dc2626;
+}
+
+.btn-danger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .modal {
   position: fixed;
   top: 0;
@@ -350,6 +416,17 @@ useHead({
   font-weight: 700;
   color: var(--text-primary);
   margin-bottom: 24px;
+}
+
+.confirm-modal .modal-content {
+  max-width: 400px;
+}
+
+.confirm-modal p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+  line-height: 1.5;
 }
 
 .form-group {

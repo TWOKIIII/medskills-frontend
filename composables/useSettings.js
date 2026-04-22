@@ -18,7 +18,7 @@ export const useSettings = () => {
           const parsed = JSON.parse(saved)
           settings.value = { ...settings.value, ...parsed }
         } catch (e) {
-          console.error('Error loading settings')
+          settings.value = { ...defaultSettings }
         }
       } else {
         localStorage.setItem('medskills_settings', JSON.stringify(settings.value))

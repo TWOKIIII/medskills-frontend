@@ -149,7 +149,6 @@ const categoriesStats = computed(() => {
   })
 })
 
-// Последние завершённые тесты
 const recentCompletedTests = computed(() => {
   return tests.value
     .filter(t => t.status === 'completed' && t.completedDate)

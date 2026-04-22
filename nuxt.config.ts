@@ -3,11 +3,6 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   
   vite: {
-    resolve: {
-      alias: {
-        'nitropack/runtime/internal/config': '@nuxt/nitro-server/runtime/utils/app-config'
-      }
-    },
     optimizeDeps: {
       include: [
         '@vue/devtools-core',
@@ -39,5 +34,7 @@ export default defineNuxtConfig({
         { rel: 'shortcut icon', href: '/favicon.ico' }
       ]
     }
-  }
+  },
+  
+  ssr: false
 })

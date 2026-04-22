@@ -24,10 +24,13 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
-  title: { type: String, default: 'Название теста' },
-  description: { type: String, default: 'Описание' },
+  title: { type: String, default: '' },
+  description: { type: String, default: '' },
   status: { type: String, default: 'new', validator: (v) => ['new', 'continue', 'completed'].includes(v) },
   progress: { type: Number, default: null },
   index: { type: Number, default: 0 }
@@ -37,9 +40,9 @@ const emit = defineEmits(['action'])
 
 const buttonText = computed(() => {
   switch (props.status) {
-    case 'continue': return 'Продолжить'
-    case 'completed': return 'Пройти снова'
-    default: return 'Пройти'
+    case 'continue': return t('tests.continue')
+    case 'completed': return t('tests.retake')
+    default: return t('tests.start')
   }
 })
 
