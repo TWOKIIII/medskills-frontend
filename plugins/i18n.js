@@ -1,4 +1,3 @@
-// plugins/i18n.js
 import { createI18n } from 'vue-i18n'
 import ru from '~/locales/ru.json'
 import en from '~/locales/en.json'
@@ -10,7 +9,6 @@ import pl from '~/locales/pl.json'
 import sv from '~/locales/sv.json'
 
 export default defineNuxtPlugin((nuxtApp) => {
-  // Получаем сохранённый язык или используем русский
   let savedLocale = 'ru'
   if (process.client) {
     savedLocale = localStorage.getItem('locale') || 'ru'

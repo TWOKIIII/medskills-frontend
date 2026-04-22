@@ -1,11 +1,19 @@
-// nuxt.config.ts
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   
   vite: {
     resolve: {
-      dedupe: ['@nuxt/nitro-server']
+      alias: {
+        'nitropack/runtime/internal/config': '@nuxt/nitro-server/runtime/utils/app-config'
+      }
+    },
+    optimizeDeps: {
+      include: [
+        '@vue/devtools-core',
+        '@vue/devtools-kit',
+        'vue-i18n'
+      ]
     }
   },
   
@@ -26,7 +34,6 @@ export default defineNuxtConfig({
           rel: 'stylesheet', 
           href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap' 
         },
-        // Явно указываем свою иконку
         { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
         { rel: 'shortcut icon', href: '/favicon.ico' }

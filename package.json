@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "nuxt build",
-    "dev": "nuxt dev",
+    "dev": "node scripts/dev.js",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
@@ -16,5 +16,4 @@
     "vue-i18n": "^9.14.5",
     "vue-router": "^5.0.4"
   }
-  
 }
