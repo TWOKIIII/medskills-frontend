@@ -54,7 +54,8 @@
     "reset": "Återställ",
     "confirmReset": "Bekräfta återställning",
     "confirmResetDesc": "Alla dina inställningar, testframsteg och profildata kommer att återställas. Denna åtgärd kan inte ångras.",
-    "dataReset": "All data har återställts"
+    "dataReset": "All data har återställts",
+    "resetPasswordDesc": "Återställ lösenordet för ditt konto"
   },
   "tests": {
     "title": "Tester",

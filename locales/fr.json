@@ -54,7 +54,8 @@
     "reset": "Réinitialiser",
     "confirmReset": "Confirmer la réinitialisation",
     "confirmResetDesc": "Tous vos paramètres, la progression des tests et les données de profil seront réinitialisés. Cette action est irréversible.",
-    "dataReset": "Toutes les données ont été réinitialisées"
+    "dataReset": "Toutes les données ont été réinitialisées",
+    "resetPasswordDesc": "Réinitialiser le mot de passe de votre compte"
   },
   "tests": {
     "title": "Tests",

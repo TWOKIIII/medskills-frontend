@@ -66,6 +66,16 @@
 
         <div class="setting-item">
           <div class="setting-info">
+            <h3>{{ t('auth.resetPassword') }}</h3>
+            <p>{{ t('settings.resetPasswordDesc') }}</p>
+          </div>
+          <button class="btn btn-primary" @click="handleResetPassword" :disabled="isResettingPassword">
+            {{ isResettingPassword ? '...' : t('auth.resetPassword') }}
+          </button>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
             <h3>{{ t('settings.resetData') }}</h3>
             <p>{{ t('settings.resetDataDesc') }}</p>
           </div>
@@ -94,7 +104,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useSettings } from '~/composables/useSettings'
 import { useLanguage } from '~/composables/useLanguage'
@@ -102,6 +112,7 @@ import { useNotifications } from '~/composables/useNotifications'
 import { useTheme } from '~/composables/useTheme'
 import { useTests } from '~/composables/useTests'
 import { useProfile } from '~/composables/useProfile'
+import { useAuth } from '~/composables/useAuth'
 
 const { t } = useI18n()
 const { settings, toggleNotifications, setTheme: setSettingsTheme, resetSettings } = useSettings()
@@ -110,9 +121,13 @@ const { addNotification } = useNotifications()
 const { setTheme } = useTheme()
 const { resetAllTests } = useTests()
 const { resetProfile } = useProfile()
+const { resetPassword, user } = useAuth()
 
 const showResetConfirm = ref(false)
 const isResetting = ref(false)
+const isResettingPassword = ref(false)
+
+const currentUserEmail = computed(() => user.value?.email || '')
 
 const handleToggleNotifications = () => {
   const enabled = toggleNotifications()
@@ -128,17 +143,7 @@ const handleChangeLanguage = (event) => {
   if (setLocale(newLocale)) {
     if (settings.value.notifications) {
       const languageName = getLanguageName(newLocale)
-      const messages = {
-        ru: `Язык изменён на ${languageName}`,
-        en: `Language changed to ${languageName}`,
-        de: `Sprache auf ${languageName} geändert`,
-        fr: `Langue changée en ${languageName}`,
-        be: `Мова зменена на ${languageName}`,
-        kk: `Тіл ${languageName} тіліне өзгертілді`,
-        pl: `Język zmieniony na ${languageName}`,
-        sv: `Språk ändrat till ${languageName}`
-      }
-      addNotification(messages[newLocale] || messages.en, 'success')
+      addNotification(t('notifications.languageChangedMessage', { language: languageName }), 'success')
     }
   } else {
     addNotification(t('validation.languageChangeError'), 'error')
@@ -148,6 +153,28 @@ const handleChangeLanguage = (event) => {
 const handleSetTheme = (theme) => {
   if (setSettingsTheme(theme)) {
     setTheme(theme === 'dark')
+  }
+}
+
+const handleResetPassword = async () => {
+  if (!currentUserEmail.value) {
+    addNotification(t('auth.userNotFound'), 'error')
+    return
+  }
+  
+  isResettingPassword.value = true
+  
+  try {
+    const result = await resetPassword(currentUserEmail.value)
+    if (result.success) {
+      addNotification(t('auth.passwordResetToDefault', { password: '111111' }), 'success')
+    }
+  } catch (error) {
+    if (error.error) {
+      addNotification(error.error, 'error')
+    }
+  } finally {
+    isResettingPassword.value = false
   }
 }
 
@@ -328,6 +355,22 @@ input:checked + .slider:before {
   border: none;
   cursor: pointer;
   transition: all 0.2s;
+}
+
+.btn-primary {
+  background: #3b82f6;
+  color: white;
+  border: var(--border-width) solid #3b82f6;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #2563eb;
+  border-color: #2563eb;
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .btn-danger {

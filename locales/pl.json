@@ -54,7 +54,8 @@
     "reset": "Resetuj",
     "confirmReset": "Potwierdź reset",
     "confirmResetDesc": "Wszystkie ustawienia, postęp testów i dane profilu zostaną zresetowane. Tej akcji nie można cofnąć.",
-    "dataReset": "Wszystkie dane zostały zresetowane"
+    "dataReset": "Wszystkie dane zostały zresetowane",
+    "resetPasswordDesc": "Zresetuj hasło do swojego konta"
   },
   "tests": {
     "title": "Testy",

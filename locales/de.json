@@ -54,7 +54,8 @@
     "reset": "Zurücksetzen",
     "confirmReset": "Zurücksetzen bestätigen",
     "confirmResetDesc": "Alle Einstellungen, Testfortschritte und Profildaten werden zurückgesetzt. Diese Aktion kann nicht rückgängig gemacht werden.",
-    "dataReset": "Alle Daten wurden zurückgesetzt"
+    "dataReset": "Alle Daten wurden zurückgesetzt",
+    "resetPasswordDesc": "Passwort Ihres Kontos zurücksetzen"
   },
   "tests": {
     "title": "Tests",

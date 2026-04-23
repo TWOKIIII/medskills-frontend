@@ -54,7 +54,8 @@
     "reset": "Reset",
     "confirmReset": "Confirm Reset",
     "confirmResetDesc": "All your settings, test progress and profile data will be reset. This action cannot be undone.",
-    "dataReset": "All data has been reset"
+    "dataReset": "All data has been reset",
+    "resetPasswordDesc": "Reset your account password"
   },
   "tests": {
     "title": "Tests",
