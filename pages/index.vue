@@ -96,9 +96,9 @@
           <div class="recommendations-card">
             <h3>{{ t('recommendations.title') }}</h3>
             <ul class="recommendations-list">
-              <li @click="goToRecommendedTest(1)">{{ t('recommendations.item1') }}</li>
-              <li @click="goToRecommendedTest(2)">{{ t('recommendations.item2') }}</li>
-              <li @click="goToRecommendedTest(3)">{{ t('recommendations.item3') }}</li>
+              <li @click="goToRecommendedTest('cardiology')">{{ t('recommendations.item1') }}</li>
+              <li @click="goToRecommendedTest('rehabilitation')">{{ t('recommendations.item2') }}</li>
+              <li @click="goToRecommendedTest('nutrition')">{{ t('recommendations.item3') }}</li>
             </ul>
           </div>
         </div>
@@ -113,20 +113,14 @@ import { useI18n } from 'vue-i18n'
 import { useNotifications } from '~/composables/useNotifications'
 import { useTests } from '~/composables/useTests'
 import { navigateTo } from 'nuxt/app'
+import { CATEGORIES } from '~/constants/categories'
 
 const { t, locale } = useI18n()
 const { addNotification } = useNotifications()
 const { tests, startTest } = useTests()
 
 const selectedCategory = ref(null)
-
-// Только 4 категории
-const categories = [
-  { id: 'traumatology', nameKey: 'tests.traumatology', descKey: 'tests.traumatologyDesc', icon: '🦴', testsCount: 3 },
-  { id: 'cardiology', nameKey: 'tests.cardiology', descKey: 'tests.cardiologyDesc', icon: '❤️', testsCount: 3 },
-  { id: 'rehabilitation', nameKey: 'tests.rehabilitation', descKey: 'tests.rehabilitationDesc', icon: '🏋️', testsCount: 3 },
-  { id: 'nutrition', nameKey: 'tests.nutrition', descKey: 'tests.nutritionDesc', icon: '🥗', testsCount: 3 }
-]
+const categories = CATEGORIES
 
 const filteredTests = computed(() => {
   if (!selectedCategory.value) return []
@@ -156,15 +150,11 @@ const handleTestAction = (test, testData) => {
     addNotification(`${t('tests.startingTest')}: ${t(test.titleKey)}`, 'success')
   }
   
-  // Передаём ID теста в URL
   navigateTo(`/test/${test.id}`)
 }
 
-const goToRecommendedTest = (recId) => {
-  let targetCategory
-  if (recId === 1) targetCategory = categories.find(c => c.id === 'cardiology')
-  else if (recId === 2) targetCategory = categories.find(c => c.id === 'rehabilitation')
-  else targetCategory = categories.find(c => c.id === 'nutrition')
+const goToRecommendedTest = (categoryId) => {
+  const targetCategory = categories.find(c => c.id === categoryId)
   if (targetCategory) selectedCategory.value = targetCategory
 }
 

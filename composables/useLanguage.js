@@ -1,17 +1,7 @@
 import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useSettings } from './useSettings'
-
-const languages = [
-  { code: 'ru', name: 'Русский', short: 'RU', flagClass: 'fi fi-ru' },
-  { code: 'en', name: 'English', short: 'EN', flagClass: 'fi fi-gb' },
-  { code: 'de', name: 'Deutsch', short: 'DE', flagClass: 'fi fi-de' },
-  { code: 'fr', name: 'Français', short: 'FR', flagClass: 'fi fi-fr' },
-  { code: 'be', name: 'Беларуская', short: 'BY', flagClass: 'fi fi-by' },
-  { code: 'kk', name: 'Қазақша', short: 'KZ', flagClass: 'fi fi-kz' },
-  { code: 'pl', name: 'Polski', short: 'PL', flagClass: 'fi fi-pl' },
-  { code: 'sv', name: 'Svenska', short: 'SE', flagClass: 'fi fi-se' }
-]
+import { LANGUAGES } from '~/constants/languages'
 
 const currentLocale = ref('ru')
 
@@ -45,15 +35,30 @@ export const useLanguage = () => {
   }
   
   const getLanguageName = (code) => {
-    const lang = languages.find(l => l.code === code)
+    const lang = LANGUAGES.find(l => l.code === code)
     return lang ? lang.name : code
+  }
+  
+  const getLanguageChangeMessage = (code, langName) => {
+    const messages = {
+      ru: `Язык изменён на ${langName}`,
+      en: `Language changed to ${langName}`,
+      de: `Sprache auf ${langName} geändert`,
+      fr: `Langue changée en ${langName}`,
+      be: `Мова зменена на ${langName}`,
+      kk: `Тіл ${langName} тіліне өзгертілді`,
+      pl: `Język zmieniony na ${langName}`,
+      sv: `Språk ändrat till ${langName}`
+    }
+    return messages[code] || messages.en
   }
   
   return {
     currentLocale: computed(() => currentLocale.value),
-    languages,
+    languages: LANGUAGES,
     setLocale,
     loadLocale,
-    getLanguageName
+    getLanguageName,
+    getLanguageChangeMessage
   }
 }

@@ -9,7 +9,6 @@
         <p class="subtitle">{{ t('knowledge.subtitle') }}</p>
       </div>
       
-      <!-- Поиск -->
       <div class="search-section">
         <div class="search-wrapper">
           <input 
@@ -22,11 +21,10 @@
         </div>
       </div>
       
-      <!-- Категории -->
       <div class="categories-section">
         <div class="categories-filter">
           <button 
-            v-for="cat in categories" 
+            v-for="cat in articleCategories" 
             :key="cat.id"
             class="category-btn"
             :class="{ active: activeCategory === cat.id }"
@@ -38,7 +36,6 @@
         </div>
       </div>
       
-      <!-- Статьи -->
       <div class="articles-grid">
         <div 
           v-for="article in filteredArticles" 
@@ -61,7 +58,6 @@
         </div>
       </div>
       
-      <!-- Популярные статьи -->
       <div class="popular-section">
         <h3>{{ t('knowledge.popularArticles') }}</h3>
         <div class="popular-list">
@@ -84,7 +80,6 @@
       </div>
     </div>
     
-    <!-- Модальное окно статьи -->
     <div class="modal" v-if="selectedArticle" @click="closeArticle">
       <div class="modal-content" @click.stop>
         <button class="modal-close" @click="closeArticle">✕</button>
@@ -108,6 +103,8 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { ARTICLE_CATEGORIES } from '~/constants/categories'
+import { ARTICLES } from '~/constants/articles'
 
 const { t, locale } = useI18n()
 
@@ -115,71 +112,8 @@ const searchQuery = ref('')
 const activeCategory = ref('all')
 const selectedArticle = ref(null)
 
-const categories = [
-  { id: 'all', nameKey: 'knowledge.allCategories', icon: '📚' },
-  { id: 'traumatology', nameKey: 'tests.traumatology', icon: '🦴' },
-  { id: 'cardiology', nameKey: 'tests.cardiology', icon: '❤️' },
-  { id: 'rehabilitation', nameKey: 'tests.rehabilitation', icon: '🏋️' },
-  { id: 'nutrition', nameKey: 'tests.nutrition', icon: '🥗' }
-]
-
-const articles = [
-  {
-    id: 1,
-    titleKey: 'knowledge.article1.title',
-    descKey: 'knowledge.article1.desc',
-    contentKey: 'knowledge.article1.content',
-    categoryKey: 'tests.traumatology',
-    category: 'traumatology',
-    icon: '🦴',
-    date: '2026-01-01',
-    views: 1250
-  },
-  {
-    id: 2,
-    titleKey: 'knowledge.article2.title',
-    descKey: 'knowledge.article2.desc',
-    contentKey: 'knowledge.article2.content',
-    categoryKey: 'tests.cardiology',
-    category: 'cardiology',
-    icon: '❤️',
-    date: '2026-02-15',
-    views: 980
-  },
-  {
-    id: 3,
-    titleKey: 'knowledge.article3.title',
-    descKey: 'knowledge.article3.desc',
-    contentKey: 'knowledge.article3.content',
-    categoryKey: 'tests.rehabilitation',
-    category: 'rehabilitation',
-    icon: '🏋️',
-    date: '2026-03-20',
-    views: 1560
-  },
-  {
-    id: 4,
-    titleKey: 'knowledge.article4.title',
-    descKey: 'knowledge.article4.desc',
-    contentKey: 'knowledge.article4.content',
-    categoryKey: 'tests.nutrition',
-    category: 'nutrition',
-    icon: '🥗',
-    date: '2026-04-05',
-    views: 2100
-  },
-  {
-    id: 5,
-    titleKey: 'knowledge.article5.title',
-    descKey: 'knowledge.article5.desc',
-    contentKey: 'knowledge.article5.content',
-    categoryKey: 'tests.traumatology',
-    category: 'traumatology',
-    icon: '🦵',
-    date: '2026-05-15',
-    views: 750
-  }
-]
+const articleCategories = ARTICLE_CATEGORIES
+const articles = ARTICLES
 
 const filteredArticles = computed(() => {
   let filtered = articles
@@ -253,7 +187,6 @@ useHead({
   color: #64748b;
 }
 
-/* Поиск */
 .search-section {
   margin-bottom: 24px;
 }
@@ -286,7 +219,6 @@ useHead({
   font-size: 20px;
 }
 
-/* Категории */
 .categories-section {
   margin-bottom: 32px;
 }
@@ -327,7 +259,6 @@ useHead({
   font-size: 18px;
 }
 
-/* Статьи */
 .articles-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -394,7 +325,6 @@ useHead({
   color: #94a3b8;
 }
 
-/* Популярные статьи */
 .popular-section {
   background: white;
   border-radius: 20px;
@@ -462,7 +392,6 @@ useHead({
   color: #94a3b8;
 }
 
-/* Модальное окно */
 .modal {
   position: fixed;
   top: 0;
@@ -553,7 +482,6 @@ useHead({
   border-top: 1px solid #e2e8f0;
 }
 
-/* Стили для контента статьи */
 .modal-body :deep(ul),
 .modal-body :deep(ol) {
   padding-left: 24px;

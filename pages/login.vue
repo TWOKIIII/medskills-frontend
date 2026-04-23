@@ -1,4 +1,3 @@
-// pages/login.vue
 <template>
   <div class="auth-page">
     <div class="auth-container">
@@ -83,6 +82,7 @@ import { useI18n } from 'vue-i18n'
 import { useAuth } from '~/composables/useAuth'
 import { useLanguage } from '~/composables/useLanguage'
 import { useNotifications } from '~/composables/useNotifications'
+import { LANGUAGE_CHANGE_MESSAGES } from '~/constants/languages'
 
 const router = useRouter()
 const { t } = useI18n()
@@ -113,17 +113,8 @@ const changeLanguage = (code) => {
   showLanguages.value = false
   
   const langName = getLanguageName(code)
-  const messages = {
-    ru: `Язык изменён на ${langName}`,
-    en: `Language changed to ${langName}`,
-    de: `Sprache auf ${langName} geändert`,
-    fr: `Langue changée en ${langName}`,
-    be: `Мова зменена на ${langName}`,
-    kk: `Тіл ${langName} тіліне өзгертілді`,
-    pl: `Język zmieniony na ${langName}`,
-    sv: `Språk ändrat till ${langName}`
-  }
-  addNotification(messages[code] || messages.en, 'success')
+  const messageFunc = LANGUAGE_CHANGE_MESSAGES[code] || LANGUAGE_CHANGE_MESSAGES.en
+  addNotification(messageFunc(langName), 'success')
 }
 
 const clearError = (field) => {

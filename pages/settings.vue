@@ -30,14 +30,9 @@
             <p>{{ t('settings.languageDesc') }}</p>
           </div>
           <select :value="settings.locale" @change="handleChangeLanguage" class="language-select">
-            <option value="ru">🇷🇺 Русский</option>
-            <option value="en">🇬🇧 English</option>
-            <option value="de">🇩🇪 Deutsch</option>
-            <option value="fr">🇫🇷 Français</option>
-            <option value="be">🇧🇾 Беларуская</option>
-            <option value="kk">🇰🇿 Қазақша</option>
-            <option value="pl">🇵🇱 Polski</option>
-            <option value="sv">🇸🇪 Svenska</option>
+            <option v-for="lang in availableLanguages" :key="lang.code" :value="lang.code">
+              {{ lang.flag }} {{ lang.name }}
+            </option>
           </select>
         </div>
         
@@ -113,6 +108,7 @@ import { useTheme } from '~/composables/useTheme'
 import { useTests } from '~/composables/useTests'
 import { useProfile } from '~/composables/useProfile'
 import { useAuth } from '~/composables/useAuth'
+import { LANGUAGES } from '~/constants/languages'
 
 const { t } = useI18n()
 const { settings, toggleNotifications, setTheme: setSettingsTheme, resetSettings } = useSettings()
@@ -128,6 +124,17 @@ const isResetting = ref(false)
 const isResettingPassword = ref(false)
 
 const currentUserEmail = computed(() => user.value?.email || '')
+
+const availableLanguages = LANGUAGES.map(lang => ({
+  ...lang,
+  flag: lang.flagClass.split(' ')[1] === 'fi-ru' ? '🇷🇺' : 
+        lang.flagClass.split(' ')[1] === 'fi-gb' ? '🇬🇧' :
+        lang.flagClass.split(' ')[1] === 'fi-de' ? '🇩🇪' :
+        lang.flagClass.split(' ')[1] === 'fi-fr' ? '🇫🇷' :
+        lang.flagClass.split(' ')[1] === 'fi-by' ? '🇧🇾' :
+        lang.flagClass.split(' ')[1] === 'fi-kz' ? '🇰🇿' :
+        lang.flagClass.split(' ')[1] === 'fi-pl' ? '🇵🇱' : '🇸🇪'
+}))
 
 const handleToggleNotifications = () => {
   const enabled = toggleNotifications()

@@ -1,4 +1,3 @@
-// components/AppHeader.vue
 <template>
   <header class="app-header">
     <h1 class="logo" @click="goToHome">MedSkills</h1>
@@ -84,7 +83,7 @@ import { useTheme } from '~/composables/useTheme'
 const router = useRouter()
 const { t, locale } = useI18n()
 const { notifications, markAsRead, clearAll, unreadCount, addNotification } = useNotifications()
-const { currentLocale, languages, setLocale, loadLocale, getLanguageName, getLanguageChangedMessage } = useLanguage()
+const { currentLocale, languages, setLocale, loadLocale, getLanguageName, getLanguageChangeMessage } = useLanguage()
 const { profile, loadProfile } = useProfile()
 const { settings } = useSettings()
 const { isDark, initTheme, toggleTheme } = useTheme()
@@ -124,7 +123,7 @@ const changeLanguage = (code) => {
   
   if (settings.value.notifications) {
     const langName = getLanguageName(code)
-    addNotification(getLanguageChangedMessage(code, langName), 'success')
+    addNotification(getLanguageChangeMessage(code, langName), 'success')
   }
 }
 

@@ -1,19 +1,5 @@
 import { ref } from 'vue'
-
-const defaultTests = [
-  { id: 1, category: 'traumatology', categoryKey: 'tests.traumatology', titleKey: 'tests.traumatologyBasic', descriptionKey: 'tests.traumatologyBasicDesc', status: 'new', progress: null, score: null, completedDate: null, currentQuestion: 0, answers: [] },
-  { id: 2, category: 'traumatology', categoryKey: 'tests.traumatology', titleKey: 'tests.traumatologyJoints', descriptionKey: 'tests.traumatologyJointsDesc', status: 'new', progress: null, score: null, completedDate: null, currentQuestion: 0, answers: [] },
-  { id: 3, category: 'traumatology', categoryKey: 'tests.traumatology', titleKey: 'tests.traumatologySpine', descriptionKey: 'tests.traumatologySpineDesc', status: 'new', progress: null, score: null, completedDate: null, currentQuestion: 0, answers: [] },
-  { id: 4, category: 'cardiology', categoryKey: 'tests.cardiology', titleKey: 'tests.cardiologyBasic', descriptionKey: 'tests.cardiologyBasicDesc', status: 'new', progress: null, score: null, completedDate: null, currentQuestion: 0, answers: [] },
-  { id: 5, category: 'cardiology', categoryKey: 'tests.cardiology', titleKey: 'tests.cardiologyECG', descriptionKey: 'tests.cardiologyECGDesc', status: 'new', progress: null, score: null, completedDate: null, currentQuestion: 0, answers: [] },
-  { id: 6, category: 'cardiology', categoryKey: 'tests.cardiology', titleKey: 'tests.cardiologyStress', descriptionKey: 'tests.cardiologyStressDesc', status: 'new', progress: null, score: null, completedDate: null, currentQuestion: 0, answers: [] },
-  { id: 7, category: 'rehabilitation', categoryKey: 'tests.rehabilitation', titleKey: 'tests.rehabilitationBasic', descriptionKey: 'tests.rehabilitationBasicDesc', status: 'new', progress: null, score: null, completedDate: null, currentQuestion: 0, answers: [] },
-  { id: 8, category: 'rehabilitation', categoryKey: 'tests.rehabilitation', titleKey: 'tests.rehabilitationPostOp', descriptionKey: 'tests.rehabilitationPostOpDesc', status: 'new', progress: null, score: null, completedDate: null, currentQuestion: 0, answers: [] },
-  { id: 9, category: 'rehabilitation', categoryKey: 'tests.rehabilitation', titleKey: 'tests.rehabilitationSports', descriptionKey: 'tests.rehabilitationSportsDesc', status: 'new', progress: null, score: null, completedDate: null, currentQuestion: 0, answers: [] },
-  { id: 10, category: 'nutrition', categoryKey: 'tests.nutrition', titleKey: 'tests.nutritionBasic', descriptionKey: 'tests.nutritionBasicDesc', status: 'new', progress: null, score: null, completedDate: null, currentQuestion: 0, answers: [] },
-  { id: 11, category: 'nutrition', categoryKey: 'tests.nutrition', titleKey: 'tests.nutritionCompetition', descriptionKey: 'tests.nutritionCompetitionDesc', status: 'new', progress: null, score: null, completedDate: null, currentQuestion: 0, answers: [] },
-  { id: 12, category: 'nutrition', categoryKey: 'tests.nutrition', titleKey: 'tests.nutritionRecovery', descriptionKey: 'tests.nutritionRecoveryDesc', status: 'new', progress: null, score: null, completedDate: null, currentQuestion: 0, answers: [] }
-]
+import { DEFAULT_TESTS } from '~/constants/tests'
 
 const tests = ref([])
 
@@ -24,16 +10,16 @@ export const useTests = () => {
       if (saved) {
         try {
           const parsed = JSON.parse(saved)
-          if (Array.isArray(parsed) && parsed.length === defaultTests.length) {
+          if (Array.isArray(parsed) && parsed.length === DEFAULT_TESTS.length) {
             tests.value = parsed
           } else {
-            tests.value = JSON.parse(JSON.stringify(defaultTests))
+            tests.value = JSON.parse(JSON.stringify(DEFAULT_TESTS))
           }
         } catch (e) {
-          tests.value = JSON.parse(JSON.stringify(defaultTests))
+          tests.value = JSON.parse(JSON.stringify(DEFAULT_TESTS))
         }
       } else {
-        tests.value = JSON.parse(JSON.stringify(defaultTests))
+        tests.value = JSON.parse(JSON.stringify(DEFAULT_TESTS))
       }
     }
   }
@@ -114,7 +100,7 @@ export const useTests = () => {
   }
 
   const resetAllTests = () => {
-    tests.value = JSON.parse(JSON.stringify(defaultTests))
+    tests.value = JSON.parse(JSON.stringify(DEFAULT_TESTS))
     saveTests()
   }
 

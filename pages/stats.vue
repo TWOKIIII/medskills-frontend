@@ -10,7 +10,6 @@
       </div>
       
       <div class="stats-content">
-        <!-- Общая статистика -->
         <div class="stats-row">
           <div class="stat-card">
             <div class="stat-icon">📊</div>
@@ -42,12 +41,10 @@
           </div>
         </div>
         
-        <!-- Кнопка сброса (для разработки) -->
         <button class="reset-btn" @click="resetAllTests" style="display: none;">
           Сбросить все тесты
         </button>
         
-        <!-- Статистика по категориям -->
         <div class="categories-section">
           <h3>{{ t('statistics.byCategory') }}</h3>
           <div class="categories-grid">
@@ -73,7 +70,6 @@
           </div>
         </div>
         
-        <!-- Последние результаты -->
         <div class="recent-section">
           <h3>{{ t('statistics.recentResults') }}</h3>
           <div class="results-list">
@@ -103,18 +99,13 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useTests } from '~/composables/useTests'
+import { CATEGORIES } from '~/constants/categories'
 
 const { t, locale } = useI18n()
 const { tests, resetAllTests } = useTests()
 
-const categories = [
-  { id: 'traumatology', nameKey: 'tests.traumatology', icon: '🦴' },
-  { id: 'cardiology', nameKey: 'tests.cardiology', icon: '❤️' },
-  { id: 'rehabilitation', nameKey: 'tests.rehabilitation', icon: '🏋️' },
-  { id: 'nutrition', nameKey: 'tests.nutrition', icon: '🥗' }
-]
+const categories = CATEGORIES
 
-// Общая статистика
 const totalTests = computed(() => tests.value.length)
 const completedTests = computed(() => tests.value.filter(t => t.status === 'completed').length)
 
@@ -127,7 +118,6 @@ const averageScore = computed(() => {
 
 const totalTimeHours = computed(() => Math.round(completedTests.value * 0.5))
 
-// Статистика по категориям
 const categoriesStats = computed(() => {
   return categories.map(cat => {
     const catTests = tests.value.filter(t => t.category === cat.id)

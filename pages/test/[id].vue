@@ -91,6 +91,8 @@ import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useNotifications } from '~/composables/useNotifications'
 import { useTests } from '~/composables/useTests'
+import { TEST_QUESTION_KEYS } from '~/constants/tests'
+import { CORRECT_ANSWERS } from '~/constants/testQuestions'
 
 const route = useRoute()
 const router = useRouter()
@@ -106,35 +108,8 @@ const currentQuestionIndex = ref(0)
 const selectedOption = ref(null)
 const isCompleted = ref(false)
 
-const testQuestionKeys = {
-  1: 'traumatologyBasic',
-  2: 'traumatologyJoints',
-  3: 'traumatologySpine',
-  4: 'cardiologyBasic',
-  5: 'cardiologyECG',
-  6: 'cardiologyStress',
-  7: 'rehabilitationBasic',
-  8: 'rehabilitationPostOp',
-  9: 'rehabilitationSports',
-  10: 'nutritionBasic',
-  11: 'nutritionCompetition',
-  12: 'nutritionRecovery'
-}
-
-const correctAnswers = {
-  traumatologyBasic: [2, 1, 2, 1, 2],
-  traumatologyJoints: [1, 1, 1, 1, 2],
-  traumatologySpine: [2, 1, 3, 0, 1],
-  cardiologyBasic: [0, 3, 3, 3, 1],
-  cardiologyECG: [1, 2, 1, 3, 2],
-  cardiologyStress: [0, 2, 1, 1, 2],
-  rehabilitationBasic: [0, 1, 3, 0, 1],
-  rehabilitationPostOp: [1, 2, 1, 2, 2],
-  rehabilitationSports: [0, 2, 3, 3, 2],
-  nutritionBasic: [0, 1, 2, 1, 0],
-  nutritionCompetition: [1, 3, 0, 1, 1],
-  nutritionRecovery: [2, 2, 2, 1, 3]
-}
+const testQuestionKeys = TEST_QUESTION_KEYS
+const correctAnswers = CORRECT_ANSWERS
 
 const currentQuestion = computed(() => questions.value[currentQuestionIndex.value])
 

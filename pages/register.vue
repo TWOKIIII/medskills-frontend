@@ -90,12 +90,13 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, onUnmounted } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useAuth } from '~/composables/useAuth'
 import { useLanguage } from '~/composables/useLanguage'
 import { useNotifications } from '~/composables/useNotifications'
+import { LANGUAGE_CHANGE_MESSAGES } from '~/constants/languages'
 
 const router = useRouter()
 const { t } = useI18n()
@@ -129,17 +130,8 @@ const changeLanguage = (code) => {
   showLanguages.value = false
   
   const langName = getLanguageName(code)
-  const messages = {
-    ru: `Язык изменён на ${langName}`,
-    en: `Language changed to ${langName}`,
-    de: `Sprache auf ${langName} geändert`,
-    fr: `Langue changée en ${langName}`,
-    be: `Мова зменена на ${langName}`,
-    kk: `Тіл ${langName} тіліне өзгертілді`,
-    pl: `Język zmieniony na ${langName}`,
-    sv: `Språk ändrat till ${langName}`
-  }
-  addNotification(messages[code] || messages.en, 'success')
+  const messageFunc = LANGUAGE_CHANGE_MESSAGES[code] || LANGUAGE_CHANGE_MESSAGES.en
+  addNotification(messageFunc(langName), 'success')
 }
 
 const clearError = (field) => {
@@ -431,5 +423,51 @@ useHead({
 
 .auth-footer a:hover {
   text-decoration: underline;
+}
+
+.dark .auth-card {
+  background: var(--bg-secondary, #1e293b);
+  border-color: var(--border-color, #64748b);
+}
+
+.dark .auth-header h2 {
+  color: var(--text-primary, #f8fafc);
+}
+
+.dark .auth-subtitle {
+  color: var(--text-secondary, #e2e8f0);
+}
+
+.dark .form-group label {
+  color: var(--text-primary, #f8fafc);
+}
+
+.dark .form-group input {
+  background: var(--bg-input, #0f172a);
+  color: var(--text-primary, #f8fafc);
+  border-color: var(--border-color, #64748b);
+}
+
+.dark .auth-footer {
+  color: var(--text-secondary, #e2e8f0);
+}
+
+.dark .language-btn {
+  background: var(--bg-secondary, #1e293b);
+  border-color: var(--border-color, #64748b);
+  color: var(--text-primary, #f8fafc);
+}
+
+.dark .language-dropdown {
+  background: var(--bg-secondary, #1e293b);
+  border-color: var(--border-color, #64748b);
+}
+
+.dark .language-item {
+  color: var(--text-primary, #f8fafc);
+}
+
+.dark .language-item:hover {
+  background: var(--bg-hover, #334155);
 }
 </style>

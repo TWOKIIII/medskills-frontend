@@ -13,15 +13,22 @@ const defaultProfile = {
 
 const profile = ref({ ...defaultProfile })
 
+const VALIDATION_RULES = {
+  nameMinLength: 3,
+  namePartsCount: 2,
+  emailRegex: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+  phoneRegex: /^\+?[0-9\s\-()]{10,20}$/
+}
+
 export const useProfile = () => {
   const { user } = useAuth()
   
   const validateName = (name) => {
-    if (!name || name.trim().length < 3) {
+    if (!name || name.trim().length < VALIDATION_RULES.nameMinLength) {
       return { valid: false, error: 'validation.nameMinLength' }
     }
     const nameParts = name.trim().split(/\s+/)
-    if (nameParts.length < 2) {
+    if (nameParts.length < VALIDATION_RULES.namePartsCount) {
       return { valid: false, error: 'validation.nameRequiresSurname' }
     }
     return { valid: true, error: null }
@@ -31,8 +38,7 @@ export const useProfile = () => {
     if (!email || email.trim().length === 0) {
       return { valid: false, error: 'validation.emailRequired' }
     }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(email)) {
+    if (!VALIDATION_RULES.emailRegex.test(email)) {
       return { valid: false, error: 'validation.emailInvalid' }
     }
     return { valid: true, error: null }
@@ -42,8 +48,7 @@ export const useProfile = () => {
     if (!phone || phone.trim().length === 0) {
       return { valid: false, error: 'validation.phoneRequired' }
     }
-    const phoneRegex = /^\+?[0-9\s\-()]{10,20}$/
-    if (!phoneRegex.test(phone)) {
+    if (!VALIDATION_RULES.phoneRegex.test(phone)) {
       return { valid: false, error: 'validation.phoneInvalid' }
     }
     return { valid: true, error: null }

@@ -17,20 +17,14 @@
 import { ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { MENU_ITEMS } from '~/constants/menuItems'
 
 const router = useRouter()
 const route = useRoute()
 const { t } = useI18n()
 
 const currentPath = ref(route.path)
-
-const menuItems = [
-  { id: 'tests', labelKey: 'app.tests', path: '/' },
-  { id: 'stats', labelKey: 'app.statistics', path: '/stats' },
-  { id: 'knowledge', labelKey: 'app.knowledge', path: '/knowledge' },
-  { id: 'settings', labelKey: 'app.settings', path: '/settings' },
-  { id: 'help', labelKey: 'app.help', path: '/help' }
-]
+const menuItems = MENU_ITEMS
 
 const navigateTo = (path) => {
   router.push(path)
